@@ -1,0 +1,72 @@
+
+/* ===== 按钮 ===== */
+.el-button {
+  border-radius: var(--radius-sm);
+}
+
+.el-button--primary {
+  background: var(--color-primary-gradient);
+  border: none;
+}
+
+/* ===== 表格 ===== */
+.el-table {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.el-table th {
+  background: var(--color-bg);
+  font-weight: 600;
+  color: var(--color-text-regular);
+}
+
+body.dark-mode .el-table th {
+  background: var(--color-dark-border);
+  color: var(--color-dark-text-secondary);
+}
+
+.el-table td {
+  color: var(--color-text-secondary);
+}
+
+/* ===== 弹窗 ===== */
+.el-dialog {
+  border-radius: var(--radius-lg);
+}
+
+/* ===== 输入框 / 下拉框 ===== */
+.el-input__inner,
+.el-select .el-input__inner {
+  border-radius: var(--radius-sm);
+}
+
+/* ===== 菜单（SidebarMenu 中的通用部分） ===== */
+.el-menu {
+  border-right: none;
+}
+
+.el-menu-item {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+}
+
+/* ===== 暗黑模式：Element UI 组件覆盖 ===== */
+body.dark-mode .el-table {
+  background: var(--color-dark-surface);
+  border-color: var(--color-dark-border-table);
+}
+
+body.dark-mode .el-table th {
+  background: var(--color-dark-border);
+  color: var(--color-dark-text-secondary);
+}
+
+body.dark-mode .el-table td {
+  color: var(--color-dark-text-muted);
+  border-color: var(--color-dark-border-table);
+}
+
+body.dark-mode .el-form-item__label {
+  color: var(--color-dark-text-muted);
+}

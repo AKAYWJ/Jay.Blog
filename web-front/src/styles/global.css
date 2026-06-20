@@ -1,0 +1,93 @@
+/* ============================================================
+   全局通用样式 —— 页面级 class 和基础样式
+   Users / Roles / System 等 CRUD 页面共享的通用 class 集中于此
+   ============================================================ */
+
+/* ===== 基础重置 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-bg);
+}
+
+body.dark-mode {
+  background: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+/* ===== 页面标题 ===== */
+.page-title {
+  font-size: var(--font-size-page-title);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-page);
+}
+
+/* ===== 搜索/表格卡片（Users / Roles 共用） ===== */
+.search-card,
+.table-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-card);
+  margin-bottom: var(--spacing-gap);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-gap);
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-gap);
+}
+
+/* ===== System 页面 info-card ===== */
+.info-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-card-lg);
+  max-width: 700px;
+}
+
+.info-card .card-header {
+  margin-bottom: var(--spacing-card-lg);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 16px;
+}
+
+.info-card .card-header h3 {
+  font-size: var(--font-size-card-title);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* ===== 暗黑模式：通用卡片 ===== */
+body.dark-mode .search-card,
+body.dark-mode .table-card,
+body.dark-mode .info-card {
+  background: var(--color-dark-surface);
+  box-shadow: var(--shadow-card-dark);
+}
+
+body.dark-mode .page-title {
+  color: var(--color-dark-text);
+}
+
+body.dark-mode .info-card .card-header {
+  border-color: var(--color-dark-border);
+}
+
+body.dark-mode .info-card .card-header h3 {
+  color: var(--color-dark-text);
+}
