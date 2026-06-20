@@ -1,13 +1,3 @@
----
-AIGC:
-    Label: "1"
-    ContentProducer: 001191440300708461136T1XGW3
-    ProduceID: 983d8f04f6d9a66519f86592cff44a7f_1ea32d516ccf11f1a0095254002afed2
-    ReservedCode1: 99lWtjPoTvp/P1L7QAWW4ext9TGtX1upIjP7nDr2UwKhnc8a7SmI/KwKkVitTdjiFhfieJm5toepZKsCBOPzFRgm1IfYtlVRmoc0ty1t670eQrj7ojD9Hr2Re3Rd32A/prZxJmYIFJGwHjBUuzhENlnQMhwiYx8QSAQasurv3xXRglcTj844uiBWcM4=
-    ContentPropagator: 001191440300708461136T1XGW3
-    PropagateID: 983d8f04f6d9a66519f86592cff44a7f_1ea32d516ccf11f1a0095254002afed2
-    ReservedCode2: 99lWtjPoTvp/P1L7QAWW4ext9TGtX1upIjP7nDr2UwKhnc8a7SmI/KwKkVitTdjiFhfieJm5toepZKsCBOPzFRgm1IfYtlVRmoc0ty1t670eQrj7ojD9Hr2Re3Rd32A/prZxJmYIFJGwHjBUuzhENlnQMhwiYx8QSAQasurv3xXRglcTj844uiBWcM4=
----
 
 # MyBlog
 
