@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.website.dao.mapper.ArticleMapper">
+    <!-- 分页查询视图 -->
+    <select id="selectArticlePage" resultType="org.website.dao.mapper.entity.Article">
+        SELECT * FROM v_article_full
+        <where>
+            <if test="article.title != null and article.title != ''">
+                title LIKE CONCAT('%',#{article.title},'%')
+            </if>
+            <if test="article.categoryId != null">
+                AND category_id = #{article.categoryId}
+            </if>
+            <if test="article.status != null">
+                AND status = #{article.status}
+            </if>
+        </where>
+        ORDER BY is_top DESC, create_time DESC
+    </select>
+
+    <!-- 根据ID查视图单条 -->
+    <select id="selectArticleById" resultType="org.website.dao.mapper.entity.Article">
+        SELECT * FROM v_article_full WHERE id = #{id}
+    </select>
+</mapper>
