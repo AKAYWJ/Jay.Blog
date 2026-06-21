@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequestMapping("/upload")
 public class FileUploadController {
     // 本地存储根目录
-    private static final String SAVE_BASE_PATH = "/home/JayBlog/fileupload/cover/";
+    private static final String SAVE_BASE_PATH = "/home/person/JayBlog/fileupload/cover/";
     // 浏览器访问前缀
     private static final String WEB_PREFIX = "/upload/cover/";
 
