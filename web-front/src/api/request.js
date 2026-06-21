@@ -5,7 +5,7 @@ import store from '../store' // ✅ 新增：导入Vuex store
 
 // 创建Axios实例
 const service = axios.create({
-  baseURL: '/',
+  baseURL: '/api',
   timeout: 15000,
   withCredentials: true // 如果后端不需要携带Cookie可以删掉
 })
