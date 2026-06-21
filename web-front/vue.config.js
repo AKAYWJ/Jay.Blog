@@ -1,4 +1,10 @@
 module.exports = {
+  pages: {
+    index: {
+      entry: 'src/main.js',
+      title: 'JayBlog'
+    }
+  },
   devServer: {
     port: 8081,
     open: true,
