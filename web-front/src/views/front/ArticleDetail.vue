@@ -134,10 +134,14 @@ export default {
         },
 
         loadLikeStatus() {
-            getLikeStatus(this.id).then(res => {
-                this.likeCount = res.data.likeCount
-                this.isLiked = res.data.isLiked
-            }).catch(() => { })
+            if (localStorage.getItem('token')) {
+                getLikeStatus(this.id).then(res => {
+                    this.likeCount = res.data.likeCount
+                    this.isLiked = res.data.isLiked
+                }).catch(() => { })
+                return
+            }
+
         },
 
         handleLike() {
@@ -194,6 +198,7 @@ export default {
 .back-row {
     margin-bottom: 24px;
 }
+
 .back-text-btn {
     display: inline-flex;
     align-items: center;
@@ -203,10 +208,12 @@ export default {
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .back-text-btn:hover {
     color: #4c3fc4;
     transform: translateX(-3px);
 }
+
 .back-text-btn i {
     font-size: 16px;
 }
@@ -229,7 +236,8 @@ export default {
         0 1px 3px rgba(0, 0, 0, 0.02),
         0 6px 22px rgba(0, 0, 0, 0.05);
 }
-.article-content > * {
+
+.article-content>* {
     position: relative;
     z-index: 1;
 }
@@ -268,6 +276,7 @@ export default {
     gap: 8px;
     margin-bottom: 24px;
 }
+
 .tag-label {
     font-size: 13px;
     color: #86868b;
@@ -279,9 +288,11 @@ export default {
     transition: color 0.2s;
     user-select: none;
 }
+
 .like-btn:hover {
     color: #6355d8;
 }
+
 .like-btn.active {
     color: #e6a23c;
 }
@@ -290,6 +301,7 @@ export default {
     margin-bottom: 24px;
     text-align: center;
 }
+
 .cover-img {
     max-width: 100%;
     max-height: 420px;
@@ -315,6 +327,7 @@ export default {
     line-height: 1.85;
     word-break: break-word;
 }
+
 .markdown-body /deep/ h2,
 .markdown-body /deep/ h3 {
     margin-top: 32px;
@@ -322,19 +335,23 @@ export default {
     font-weight: 600;
     color: #1d1d1f;
 }
+
 .markdown-body /deep/ p {
     margin-bottom: 18px;
 }
+
 .markdown-body /deep/ img {
     max-width: 100%;
     border-radius: 12px;
     margin: 16px 0;
 }
+
 .markdown-body /deep/ ul,
 .markdown-body /deep/ ol {
     padding-left: 26px;
     margin-bottom: 18px;
 }
+
 .markdown-body /deep/ code {
     background: #f5f7fa;
     padding: 3px 8px;
@@ -342,6 +359,7 @@ export default {
     font-size: 14px;
     color: #e6a23c;
 }
+
 .markdown-body /deep/ pre {
     background: #2d2d2d;
     color: #ccc;
@@ -350,17 +368,19 @@ export default {
     overflow-x: auto;
     margin-bottom: 18px;
 }
+
 .markdown-body /deep/ pre code {
     background: transparent;
     color: inherit;
     padding: 0;
 }
+
 .markdown-body /deep/ blockquote {
     margin: 20px 0;
     padding: 12px 20px;
     border-left: 4px solid #dcdfe6;
     color: #6e6e73;
-    background: rgba(0,0,0,0.02);
+    background: rgba(0, 0, 0, 0.02);
     border-radius: 0 12px 12px 0;
 }
 
@@ -368,6 +388,7 @@ export default {
 body.dark-mode .back-text-btn {
     color: #b3a7ff;
 }
+
 body.dark-mode .back-text-btn:hover {
     color: #d1c8ff;
 }
@@ -376,31 +397,39 @@ body.dark-mode .article-content {
     background: rgba(30, 30, 36, 0.58);
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 body.dark-mode .article-title {
     color: #f5f5f7;
 }
+
 body.dark-mode .article-meta {
     border-bottom-color: rgba(255, 255, 255, 0.06);
 }
+
 body.dark-mode .article-summary {
     background: rgba(64, 158, 255, 0.1);
     color: #a3b1c2;
 }
+
 body.dark-mode .markdown-body {
     color: #f5f5f7;
 }
+
 body.dark-mode .markdown-body /deep/ h2,
 body.dark-mode .markdown-body /deep/ h3 {
     color: #f5f5f7;
 }
+
 body.dark-mode .markdown-body /deep/ code {
     background: rgba(255, 255, 255, 0.1);
 }
+
 body.dark-mode .markdown-body /deep/ blockquote {
     background: rgba(255, 255, 255, 0.05);
     border-color: #4a5060;
     color: #909399;
 }
+
 body.dark-mode .like-btn:hover {
     color: #b3a7ff;
 }
@@ -410,13 +439,16 @@ body.dark-mode .like-btn:hover {
     .article-detail {
         padding: 16px;
     }
+
     .back-row {
         margin-bottom: 16px;
     }
+
     .article-content {
         padding: 24px 20px;
         border-radius: 20px;
     }
+
     .article-title {
         font-size: 24px;
     }
