@@ -9,11 +9,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @RestController
 @RequestMapping("/upload")
 public class FileUploadController {
-    // Mac 本地存储根目录
-    private static final String SAVE_BASE_PATH = "/Users/yewenjie/项目资源/MyBlog/fileupload/cover/";
+    // 本地存储根目录
+    private static final String SAVE_BASE_PATH = "/home/JayBlog/fileupload/cover/";
     // 浏览器访问前缀
     private static final String WEB_PREFIX = "/upload/cover/";
 

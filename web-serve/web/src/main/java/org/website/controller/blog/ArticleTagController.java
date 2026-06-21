@@ -9,6 +9,12 @@ import org.website.service.ArticleTagService;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @RestController
 @RequestMapping("/articleTag")
 public class ArticleTagController {

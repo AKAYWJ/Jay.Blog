@@ -2,6 +2,12 @@ package org.website.common.result;
 
 import lombok.Data;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Data
 public class Result<T> {
     private int code;

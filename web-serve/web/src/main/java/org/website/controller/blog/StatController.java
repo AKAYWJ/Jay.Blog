@@ -16,6 +16,12 @@ import org.website.service.VisitorService;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @RestController
 @RequestMapping("/stat")
 public class StatController {

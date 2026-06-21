@@ -47,9 +47,9 @@
           <h3 class="card-title">👤 我的信息</h3>
         </div>
         <div class="user-info-content">
-          <!-- 用户头像 -->
-          <el-avatar :size="80" class="user-avatar">
-            <img src="https://cube.elemecdn.com/0/88/03de5774d34b4cdd59a27da7a481e.jpeg" alt="用户头像">
+          <!-- 用户头像：从vuex读取，无头像显示默认图标 -->
+          <el-avatar :size="80" class="user-avatar" :src="avatar">
+            <i class="el-icon-user-solid"></i>
           </el-avatar>
 
           <!-- 用户信息列表 -->
@@ -66,6 +66,11 @@
               <span class="info-label">角色</span>
               <span class="info-value">{{ roleId === '1' ? '管理员' : roleId === '2' ? '运营' : '普通用户' }}</span>
             </div>
+            <!-- 新增邮箱展示 -->
+            <div class="info-item">
+              <span class="info-label">邮箱</span>
+              <span class="info-value">{{ avatarEmail || '未设置邮箱' }}</span>
+            </div>
           </div>
 
           <!-- 退出登录按钮（和主题风格统一） -->
@@ -79,36 +84,42 @@
 </template>
 
 <script>
-
 import { loadAsyncMenus } from '@/router'
 export default {
   name: 'HomeView',
   data() {
     return {
-      // 日历当前显示的日期
       currentDate: new Date(),
-      // 今天的日期（假数据，可替换为真实接口）
       today: new Date(),
-      // 节日假数据（可根据实际情况修改）
       holiday: '无特殊节日，普通工作日',
-      // 星期数组
       weekDays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
     }
-  }, created() {
+  },
+  created() {
     loadAsyncMenus()
   },
   computed: {
-    // 从Vuex获取用户信息
+    // 用户名
     username() {
       return this.$store.getters.getUsername
     },
+    // 用户ID
     userId() {
       return this.$store.getters.getUserId
     },
+    // 角色ID
     roleId() {
       return this.$store.getters.getRoleId
     },
-    // 格式化今天的日期，显示为「YYYY年MM月DD日 星期X」
+    // 头像地址
+    avatar() {
+      return this.$store.getters.getUserAvatar
+    },
+    // 邮箱
+    avatarEmail() {
+      return this.$store.getters.getUserEmail
+    },
+    // 格式化日期
     formattedDate() {
       const year = this.today.getFullYear()
       const month = this.today.getMonth() + 1
@@ -118,12 +129,10 @@ export default {
     }
   },
   methods: {
-    // 判断日期是否为今天，用于高亮显示
     isToday(day) {
       const todayStr = `${this.today.getFullYear()}-${String(this.today.getMonth() + 1).padStart(2, '0')}-${String(this.today.getDate()).padStart(2, '0')}`
       return day === todayStr
     },
-    // 退出登录逻辑
     handleLogout() {
       this.$confirm('确定要退出登录吗？', '提示', {
         confirmButtonText: '确定',
@@ -131,7 +140,8 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('logout')
-      }).catch(()=>{ /*取消，空函数即可*/ })
+        this.$router.push('/login')
+      }).catch(() => { })
     }
   }
 }
@@ -198,20 +208,38 @@ export default {
 .calendar-card {
   flex: 2;
   min-width: 320px;
-  background: var(--color-white);
+  position: relative;
+  overflow: hidden;
+  background: var(--liquid-glass-bg);
+  backdrop-filter: var(--liquid-glass-blur);
+  border: var(--liquid-glass-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--liquid-glass-shadow);
   padding: var(--spacing-card-lg);
+}
+
+.calendar-card>* {
+  position: relative;
+  z-index: 1;
 }
 
 /* 用户信息卡片 */
 .user-info-card {
   flex: 1;
   min-width: 280px;
-  background: var(--color-white);
+  position: relative;
+  overflow: hidden;
+  background: var(--liquid-glass-bg);
+  backdrop-filter: var(--liquid-glass-blur);
+  border: var(--liquid-glass-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--liquid-glass-shadow);
   padding: var(--spacing-card-lg);
+}
+
+.user-info-card>* {
+  position: relative;
+  z-index: 1;
 }
 
 /* 通用卡片头部 */
@@ -329,6 +357,7 @@ export default {
   font-size: var(--font-size-body);
   color: var(--welcome-text);
   font-weight: 500;
+  word-break: break-all;
 }
 
 /* 退出按钮 */
@@ -363,7 +392,9 @@ body.dark-mode .front-back-btn {
 
 body.dark-mode .calendar-card,
 body.dark-mode .user-info-card {
-  background-color: var(--color-dark-surface-alt);
+  background: var(--liquid-glass-bg);
+  border: var(--liquid-glass-border);
+  box-shadow: var(--liquid-glass-shadow);
 }
 
 body.dark-mode .card-title {
@@ -385,6 +416,10 @@ body.dark-mode .info-label {
 
 body.dark-mode .info-value {
   color: var(--color-dark-text-regular);
+}
+
+body.dark-mode .info-item {
+  border-bottom-color: #2c2c44;
 }
 
 /* 移动端适配 */

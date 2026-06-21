@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar-container" :class="{ collapsed: isCollapsed, dark: isDarkMode }">
-    <!-- 🔥 修复1：窗口控制条整体隐藏（v-show 放在最外层div） -->
+    <!-- 窗口控制条 -->
     <div class="window-controls">
       <span class="control-dot red" v-show="!isCollapsed"></span>
       <span class="control-dot yellow" v-show="!isCollapsed"></span>
@@ -8,41 +8,40 @@
     </div>
 
     <!-- Logo区域 -->
-    <div class="logo-section">
+    <div @click="$router.push('/front')" class="logo-section">
       <div class="logo-icon"></div>
       <span class="logo-text" v-if="!isCollapsed">管理系统</span>
     </div>
 
-    <!-- 导航菜单 -->
-    <el-menu :default-active="activeRoute" mode="vertical" :collapse="isCollapsed" :collapse-transition="false"
-      background-color="transparent" text-color="#7A8286" active-text-color="#008CFF" @select="handleMenuSelect">
-      <!-- 第一组：数据分析 -->
-      <div class="menu-group" v-if="!isCollapsed">ANALYTICS</div>
-      <el-menu-item index="/admin/home">
-        <i class="el-icon-menu"></i>
-        <span slot="title">首页</span>
-      </el-menu-item>
-      <el-menu-item index="/admin/echart">
-        <i class="el-icon-data-line"></i>
-        <span slot="title">仪表盘</span>
-      </el-menu-item>
+    <!-- 菜单滚动容器：核心新增 -->
+    <div class="menu-scroll-wrap">
+      <el-menu :default-active="activeRoute" mode="vertical" :collapse="isCollapsed" :collapse-transition="false"
+        background-color="transparent" text-color="#7A8286" active-text-color="#5B4FCF" @select="handleMenuSelect">
+        <!-- 第一组：数据分析 -->
+        <div class="menu-group" v-if="!isCollapsed">ANALYTICS</div>
+        <el-menu-item index="/admin/home">
+          <i class="el-icon-menu"></i>
+          <span slot="title">首页</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/echart">
+          <i class="el-icon-data-line"></i>
+          <span slot="title">仪表盘</span>
+        </el-menu-item>
 
-      <!-- 第二组：内容管理 -->
-      <div class="menu-group" v-if="!isCollapsed">CONTENT</div>
-      <el-menu-item v-for="(item, index) in menu" :index='item.path'>
-        <i :class="item.icon"></i>
-        <span slot="title">{{ item.name }}</span>
-      </el-menu-item>
-    </el-menu>
+        <!-- 第二组：内容管理 -->
+        <div class="menu-group" v-if="!isCollapsed">CONTENT</div>
+        <el-menu-item v-for="(item, index) in menu" :index='item.path' :key="index">
+          <i :class="item.icon"></i>
+          <span slot="title">{{ item.name }}</span>
+        </el-menu-item>
+      </el-menu>
+    </div>
 
-    <!-- 底部操作区 -->
+    <!-- 底部操作区：固定在底部不滚动 -->
     <div class="sidebar-footer">
-      <!-- 🔥 修复2：点击折叠时，通知父组件更新状态 -->
       <el-button type="text" icon="el-icon-s-fold" @click="toggleCollapse" class="collapse-btn">
         <span v-if="!isCollapsed">收起菜单</span>
       </el-button>
-
-      <!-- 明暗模式切换 -->
       <el-button type="text" :icon="isDarkMode ? 'el-icon-sunny' : 'el-icon-moon'" @click="isDarkMode = !isDarkMode"
         class="theme-btn">
         <span v-if="!isCollapsed">{{ isDarkMode ? '浅色模式' : '深色模式' }}</span>
@@ -69,7 +68,6 @@ export default {
   watch: {
     isCollapsed(val) {
       localStorage.setItem('sidebarCollapsed', val)
-      // 🔥 关键：状态变化时通知父组件
       this.$emit('update:collapse', val)
     },
     isDarkMode(val) {
@@ -112,6 +110,8 @@ export default {
   left: 0;
   top: 0;
   z-index: 1000;
+  overflow: hidden;
+  /* 隐藏容器滚动，交给内部滚动容器 */
 }
 
 /* 折叠状态 */
@@ -130,6 +130,8 @@ export default {
   display: flex;
   gap: 8px;
   padding: 20px 24px;
+  flex-shrink: 0;
+  /* 禁止压缩 */
 }
 
 .control-dot {
@@ -156,10 +158,12 @@ export default {
   align-items: center;
   gap: 12px;
   padding: 0 24px 32px;
+  flex-shrink: 0;
+  /* 禁止压缩 */
 }
 
 .logo-icon {
-  background-image: url("../assets/buulogo.png");
+  background-image: url("../assets/logo.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -179,6 +183,35 @@ export default {
   color: var(--color-dark-text);
 }
 
+/* ========== 新增：菜单滚动容器 ========== */
+.menu-scroll-wrap {
+  flex: 1;
+  /* 自动占满剩余高度 */
+  overflow-y: auto;
+  /* 垂直滚动 */
+  overflow-x: hidden;
+  /* 禁止横向滚动 */
+  /* 美化滚动条（浅色） */
+}
+
+.menu-scroll-wrap::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menu-scroll-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu-scroll-wrap::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 4px;
+}
+
+/* 暗黑滚动条 */
+.dark .menu-scroll-wrap::-webkit-scrollbar-thumb {
+  background: #444654;
+}
+
 /* 菜单分组标题 */
 .menu-group {
   font-size: var(--font-size-caption);
@@ -193,7 +226,7 @@ export default {
   color: var(--color-dark-text-muted);
 }
 
-/* 菜单样式（仅 sidebar 特有部分，通用覆盖在 element-override.css） */
+/* 菜单样式 */
 /deep/ .el-menu {
   background: transparent;
   padding: 0 12px;
@@ -224,12 +257,12 @@ export default {
 
 .dark /deep/ .el-menu-item:hover {
   background-color: var(--color-dark-border) !important;
-  color: #4DB3FF !important;
+  color: #A89FF0 !important;
 }
 
 .dark /deep/ .el-menu-item.is-active {
   background-color: var(--color-dark-border) !important;
-  color: #4DB3FF !important;
+  color: #A89FF0 !important;
 }
 
 /* 菜单图标 */
@@ -244,13 +277,13 @@ export default {
   width: 100%;
 }
 
-/* 底部操作区 */
+/* 底部操作区：flex-shrink:0 固定高度不压缩 */
 .sidebar-footer {
   display: flex;
   flex-direction: column;
-  margin-top: auto;
   padding: 20px 12px;
   border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .dark .sidebar-footer {
@@ -282,6 +315,6 @@ export default {
 .dark .collapse-btn:hover,
 .dark .theme-btn:hover {
   background-color: var(--color-dark-border);
-  color: #4DB3FF;
+  color: #A89FF0;
 }
 </style>

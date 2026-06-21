@@ -7,6 +7,12 @@ import org.website.dao.mapper.ArticleMapper;
 import org.website.dao.mapper.entity.Article;
 import org.website.service.ArticleService;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         implements ArticleService {

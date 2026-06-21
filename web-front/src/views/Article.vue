@@ -216,7 +216,10 @@ export default {
     },
     methods: {
         handleChange(md, render) {
-            this.articleForm.contentHtml = render
+            // 图片样式：宽度自适应、等比、圆角、上下外边距、水平居中
+            const imgGlobalStyle = "max-width:60%;height:auto;border-radius:12px;margin:16px auto;display:block;object-fit:contain;";
+            let processedHtml = render.replace(/<img /g, `<img style="${imgGlobalStyle}" `);
+            this.articleForm.contentHtml = processedHtml;
         },
         // md编辑器图片上传修复（修复缺少param变量报错）
         handleImgAdd(pos, file) {
@@ -407,11 +410,21 @@ export default {
 
 .search-card,
 .table-card {
-    background: var(--color-white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    background: var(--liquid-glass-bg);
+    backdrop-filter: var(--liquid-glass-blur);
+    border: var(--liquid-glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--liquid-glass-shadow);
     padding: var(--spacing-card);
     margin-bottom: var(--spacing-gap);
+}
+
+.search-card>*,
+.table-card>* {
+    position: relative;
+    z-index: 1;
 }
 
 .table-header {
@@ -433,7 +446,8 @@ body.dark-mode .page-title {
 
 body.dark-mode .search-card,
 body.dark-mode .table-card {
-    background: var(--color-dark-surface);
-    box-shadow: var(--shadow-card-dark);
+    background: var(--liquid-glass-bg);
+    border: var(--liquid-glass-border);
+    box-shadow: var(--liquid-glass-shadow);
 }
 </style>

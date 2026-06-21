@@ -15,6 +15,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 // 关键：继承 ServiceImpl<SysPermissionMapper, SysPermission>
+
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, SysPermission>
         implements SysPermissionService {
 

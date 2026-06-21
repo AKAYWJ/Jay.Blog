@@ -1,26 +1,21 @@
 <template>
     <div class="comment-section">
-        <h3 class="section-title">评论区 ({{ total }})</h3>
+        <h3 class="section-title">评论 ({{ total }})</h3>
 
-        <!-- 发表评论 -->
         <div class="comment-input-box">
-            <el-input v-model="commentForm.content" type="textarea" :rows="3" placeholder="发表你的看法..." maxlength="500"
+            <el-input v-model="commentForm.content" type="textarea" :rows="3" placeholder="说点什么..." maxlength="500"
                 show-word-limit></el-input>
             <div class="submit-bar">
-                <span v-if="!isLogin" class="login-tip">登录后才能发表评论</span>
-                <el-button type="primary" :disabled="!commentForm.content.trim() || !isLogin" :loading="submitLoading"
-                    @click="submitComment">
-                    发表评论
-                </el-button>
+                <span v-if="!isLogin" class="login-tip">登录后发表评论</span>
+                <el-button :disabled="!commentForm.content.trim() || !isLogin" :loading="submitLoading"
+                    @click="submitComment" class="submit-btn">发表</el-button>
             </div>
         </div>
 
-        <!-- 评论列表 -->
         <div class="comment-list" v-loading="loading">
-            <el-empty v-if="commentList.length === 0 && !loading" description="暂无评论，快来抢沙发~"></el-empty>
+            <el-empty v-if="commentList.length === 0 && !loading" description="还没有评论"></el-empty>
 
             <div v-for="comment in commentList" :key="comment.id" class="comment-item">
-                <!-- 评论头部 -->
                 <div class="comment-header">
                     <div class="user-avatar">{{ comment.userName?.charAt(0) || 'U' }}</div>
                     <div class="user-info">
@@ -29,18 +24,14 @@
                     </div>
                     <div class="comment-actions">
                         <el-button type="text" size="small" @click="openReply(comment.id)">回复</el-button>
-                        <!-- 仅作者显示删除按钮 -->
-                        <el-button type="text" size="small" style="color:#f56c6c"
-                            v-if="isLogin && String(comment.userId) === String(currentUserId)" @click="handleDelete(comment.id)">
-                            删除
-                        </el-button>
+                        <el-button type="text" size="small" class="delete-btn"
+                            v-if="isLogin && String(comment.userId) === String(currentUserId)"
+                            @click="handleDelete(comment.id)">删除</el-button>
                     </div>
                 </div>
 
-                <!-- 评论内容 -->
                 <div class="comment-content">{{ comment.content }}</div>
 
-                <!-- 回复列表 -->
                 <div class="reply-list" v-if="comment.replyList && comment.replyList.length > 0">
                     <div v-for="reply in comment.replyList" :key="reply.id" class="reply-item">
                         <div class="reply-main">
@@ -49,30 +40,24 @@
                         </div>
                         <div class="reply-footer">
                             <span class="reply-time">{{ formatDate(reply.createTime) }}</span>
-                            <!-- 回复作者显示删除按钮 -->
-                            <el-button type="text" size="mini" style="color:#f56c6c"
-                                v-if="isLogin && String(reply.userId) === String(currentUserId)" @click="handleDelete(reply.id)">
-                                删除
-                            </el-button>
+                            <el-button type="text" size="mini" class="delete-btn"
+                                v-if="isLogin && String(reply.userId) === String(currentUserId)"
+                                @click="handleDelete(reply.id)">删除</el-button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 回复输入框 -->
                 <div v-if="activeReplyId === comment.id" class="reply-input-box">
-                    <el-input v-model="replyForm.content" size="small" placeholder="回复评论..." maxlength="300"></el-input>
+                    <el-input v-model="replyForm.content" size="small" placeholder="回复..." maxlength="300"></el-input>
                     <div class="reply-actions">
                         <el-button size="mini" @click="activeReplyId = null">取消</el-button>
-                        <el-button size="mini" type="primary" :disabled="!replyForm.content.trim()"
-                            :loading="replyLoading" @click="submitReply(comment.id)">
-                            发送
-                        </el-button>
+                        <el-button size="mini" class="submit-btn" :disabled="!replyForm.content.trim()"
+                            :loading="replyLoading" @click="submitReply(comment.id)">发送</el-button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 分页 -->
         <div class="pagination-wrap" v-if="total > pageSize">
             <el-pagination @current-change="handlePageChange" :current-page="pageNum" :page-size="pageSize"
                 layout="prev, pager, next" :total="total"></el-pagination>
@@ -86,140 +71,61 @@ import { getFrontCommentList, addComment, addReply, deleteMyComment } from '@/ap
 
 export default {
     name: 'CommentSection',
-    props: {
-        articleId: {
-            type: [String, Number],
-            required: true
-        }
-    },
+    props: { articleId: { type: [String, Number], required: true } },
     computed: {
         ...mapGetters(['getUserId']),
-        // 当前登录用户ID
-        currentUserId() {
-            return this.getUserId
-        },
-        isLogin() {
-            return !!localStorage.getItem('token')
-        }
+        currentUserId() { return this.getUserId },
+        isLogin() { return !!localStorage.getItem('token') }
     },
     data() {
         return {
-            commentList: [],
-            total: 0,
-            pageNum: 1,
-            pageSize: 10,
-            loading: false,
-            submitLoading: false,
-            replyLoading: false,
+            commentList: [], total: 0, pageNum: 1, pageSize: 10,
+            loading: false, submitLoading: false, replyLoading: false,
             activeReplyId: null,
-            commentForm: {
-                content: ''
-            },
-            replyForm: {
-                content: ''
-            }
+            commentForm: { content: '' },
+            replyForm: { content: '' }
         }
     },
     watch: {
-        articleId: {
-            immediate: true,
-            handler() {
-                this.pageNum = 1
-                this.loadCommentList()
-            }
-        }
+        articleId: { immediate: true, handler() { this.pageNum = 1; this.loadCommentList() } }
     },
     methods: {
         loadCommentList() {
             this.loading = true
-            getFrontCommentList({
-                articleId: this.articleId,
-                pageNum: this.pageNum,
-                pageSize: this.pageSize
-            }).then(res => {
-                this.commentList = res.data.records
-                // console.log(this.commentList);
-                // console.log(this.currentUserId);
-                
-                this.total = res.data.total
-            }).catch(() => {
-                this.$message.error('获取评论失败')
-            }).finally(() => {
-                this.loading = false
-            })
+            getFrontCommentList({ articleId: this.articleId, pageNum: this.pageNum, pageSize: this.pageSize })
+                .then(res => { this.commentList = res.data.records; this.total = res.data.total })
+                .catch(() => { this.$message.error('获取评论失败') })
+                .finally(() => { this.loading = false })
         },
-
         submitComment() {
-            if (!this.isLogin) {
-                this.$message.warning('请先登录')
-                return
-            }
+            if (!this.isLogin) return this.$message.warning('请先登录')
             this.submitLoading = true
-            addComment({
-                articleId: this.articleId,
-                content: this.commentForm.content.trim()
-            }).then(() => {
-                this.$message.success('评论成功，待审核')
-                this.commentForm.content = ''
-                this.pageNum = 1
-                this.loadCommentList()
-            }).catch(() => {
-                this.$message.error('评论失败')
-            }).finally(() => {
-                this.submitLoading = false
-            })
+            addComment({ articleId: this.articleId, content: this.commentForm.content.trim() })
+                .then(() => { this.$message.success('评论成功'); this.commentForm.content = ''; this.pageNum = 1; this.loadCommentList() })
+                .catch(() => { this.$message.error('评论失败') })
+                .finally(() => { this.submitLoading = false })
         },
-
         openReply(commentId) {
-            if (!this.isLogin) {
-                this.$message.warning('请先登录')
-                return
-            }
-            this.activeReplyId = commentId
-            this.replyForm.content = ''
+            if (!this.isLogin) return this.$message.warning('请先登录')
+            this.activeReplyId = commentId; this.replyForm.content = ''
         },
-
         submitReply(parentId) {
             this.replyLoading = true
-            addReply({
-                articleId: this.articleId,
-                parentId: parentId,
-                content: this.replyForm.content.trim()
-            }).then(() => {
-                this.$message.success('回复成功，待审核')
-                this.activeReplyId = null
-                this.replyForm.content = ''
-                this.loadCommentList()
-            }).catch(() => {
-                this.$message.error('回复失败')
-            }).finally(() => {
-                this.replyLoading = false
-            })
+            addReply({ articleId: this.articleId, parentId, content: this.replyForm.content.trim() })
+                .then(() => { this.$message.success('回复成功'); this.activeReplyId = null; this.replyForm.content = ''; this.loadCommentList() })
+                .catch(() => { this.$message.error('回复失败') })
+                .finally(() => { this.replyLoading = false })
         },
-
-        // 删除评论/回复
         handleDelete(id) {
-            this.$confirm('确定删除该评论？删除后不可恢复', '提示', {
-                type: 'warning'
-            }).then(() => {
-                deleteMyComment(id).then(() => {
-                    this.$message.success('删除成功')
-                    this.loadCommentList()
-                }).catch(() => {
-                    this.$message.error('删除失败')
-                })
-            }).catch(()=>{ /*取消，空函数即可*/ })
+            this.$confirm('确定删除该评论？', '提示', { type: 'warning' })
+                .then(() => deleteMyComment(id).then(() => { this.$message.success('已删除'); this.loadCommentList() }))
+                .catch(() => {})
         },
-
-        handlePageChange(page) {
-            this.pageNum = page
-            this.loadCommentList()
-        },
-
+        handlePageChange(page) { this.pageNum = page; this.loadCommentList() },
         formatDate(date) {
             if (!date) return '-'
             const d = new Date(date)
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 0)}-${String(d.getDate()).padStart(2, 0)} ${String(d.getHours()).padStart(2, 0)}:${String(d.getMinutes()).padStart(2, 0)}`
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
         }
     }
 }
@@ -227,8 +133,8 @@ export default {
 
 <style scoped>
 .comment-section {
-    margin-top: 32px;
-    padding-top: 24px;
+    margin-top: 36px;
+    padding-top: 28px;
     border-top: 1px solid var(--color-border);
 }
 
@@ -236,11 +142,21 @@ export default {
     font-size: 18px;
     font-weight: 600;
     color: var(--color-text-primary);
-    margin: 0 0 20px 0;
+    margin: 0 0 20px;
 }
 
 .comment-input-box {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+}
+
+.comment-input-box /deep/ .el-textarea__inner {
+    border-radius: var(--radius-md);
+    border-color: var(--color-border);
+    transition: var(--transition-fast);
+}
+
+.comment-input-box /deep/ .el-textarea__inner:focus {
+    border-color: var(--color-primary);
 }
 
 .submit-bar {
@@ -251,19 +167,39 @@ export default {
 }
 
 .login-tip {
-    color: #f56c6c;
+    color: var(--color-text-muted);
     font-size: 13px;
 }
+
+.submit-btn {
+    background: var(--color-primary-gradient);
+    border: none;
+    border-radius: 999px;
+    color: #fff;
+}
+
+.submit-btn:hover { filter: brightness(1.08); }
 
 .comment-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .comment-item {
-    padding-bottom: 20px;
-    border-bottom: 1px dashed var(--color-border-light);
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+    background: var(--liquid-glass-bg);
+    backdrop-filter: var(--liquid-glass-blur);
+    border: var(--liquid-glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--liquid-glass-shadow);
+}
+
+.comment-item > * {
+    position: relative;
+    z-index: 1;
 }
 
 .comment-header {
@@ -277,19 +213,17 @@ export default {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #409eff;
-    color: #fff;
+    background: var(--color-primary-light-bg);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     flex-shrink: 0;
 }
 
-.user-info {
-    flex: 1;
-}
+.user-info { flex: 1; }
 
 .user-name {
     font-size: 14px;
@@ -299,13 +233,21 @@ export default {
 
 .comment-time {
     font-size: 12px;
-    color: var(--color-text-secondary);
+    color: var(--color-text-muted);
     margin-top: 2px;
 }
 
 .comment-actions {
     display: flex;
     gap: 8px;
+}
+
+.delete-btn {
+    color: var(--color-text-muted) !important;
+}
+
+.delete-btn:hover {
+    color: #D32F2F !important;
 }
 
 .comment-content {
@@ -317,11 +259,11 @@ export default {
 }
 
 .reply-list {
-    margin-top: 12px;
+    margin-top: 14px;
     margin-left: 48px;
-    padding: 12px 16px;
-    background: var(--color-bg-light);
-    border-radius: 6px;
+    padding: 14px 18px;
+    background: var(--color-primary-light-bg);
+    border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -339,7 +281,7 @@ export default {
 }
 
 .reply-user {
-    color: #409eff;
+    color: var(--color-primary);
     font-weight: 500;
 }
 
@@ -354,13 +296,17 @@ export default {
 }
 
 .reply-time {
-    color: var(--color-text-secondary);
+    color: var(--color-text-muted);
     font-size: 12px;
 }
 
 .reply-input-box {
     margin-left: 48px;
     margin-top: 12px;
+}
+
+.reply-input-box /deep/ .el-input__inner {
+    border-radius: var(--radius-sm);
 }
 
 .reply-actions {
@@ -373,14 +319,25 @@ export default {
 .pagination-wrap {
     display: flex;
     justify-content: center;
-    margin-top: 24px;
+    margin-top: 28px;
 }
 
 body.dark-mode .comment-section {
     border-top-color: var(--color-dark-border);
 }
 
+body.dark-mode .user-avatar {
+    background: rgba(91, 79, 207, 0.15);
+}
+
 body.dark-mode .reply-list {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(91, 79, 207, 0.06);
+}
+
+body.dark-mode .comment-item {
+    background: var(--liquid-glass-bg);
+    border: var(--liquid-glass-border);
+    box-shadow: var(--liquid-glass-shadow);
+    border-bottom-color: var(--color-dark-border);
 }
 </style>

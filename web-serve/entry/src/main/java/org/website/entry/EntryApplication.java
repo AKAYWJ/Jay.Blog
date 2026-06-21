@@ -5,6 +5,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @SpringBootApplication
 @ComponentScan(value = "org.website")
 @MapperScan("org.website.dao.mapper")

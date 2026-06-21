@@ -1,18 +1,21 @@
 <template>
     <div class="article-detail">
-        <!-- 加载状态 -->
-        <div v-loading="loading" element-loading-text="加载中...">
-            <!-- 返回按钮 -->
-            <div class="back-bar">
-                <el-button icon="el-icon-arrow-left" @click="goBack">返回列表</el-button>
-            </div>
+        <!-- 极简返回按钮，无外层玻璃卡片 -->
+        <div class="back-row">
+            <span class="back-text-btn" @click="goBack">
+                <i class="el-icon-arrow-left"></i>
+                返回文章列表
+            </span>
+        </div>
 
+        <!-- 加载状态容器 -->
+        <div v-loading="loading" element-loading-text="加载中...">
             <!-- 文章不存在 -->
             <div v-if="isError" class="error-box">
                 <el-empty description="文章不存在或已被删除"></el-empty>
             </div>
 
-            <!-- 文章正文 -->
+            <!-- 文章正文卡片（液态玻璃主体） -->
             <div v-else class="article-content">
                 <!-- 文章标题 -->
                 <h1 class="article-title">{{ article.title }}</h1>
@@ -36,7 +39,7 @@
                     <span class="meta-item">发布时间：{{ formatDate(article.createTime) }}</span>
                 </div>
 
-                <!-- 新增：文章标签区域 -->
+                <!-- 文章标签区域 -->
                 <div v-if="article.tagNameList && article.tagNameList.length > 0" class="tag-wrap">
                     <span class="tag-label">标签：</span>
                     <el-tag v-for="tag in article.tagNameList" :key="tag" size="small" effect="light">
@@ -59,6 +62,7 @@
             </div>
         </div>
 
+        <!-- 评论区 -->
         <CommentSection :article-id="id" />
     </div>
 </template>
@@ -92,7 +96,6 @@ export default {
                 status: 1,
                 viewCount: 0,
                 createTime: '',
-                // 标签数组，后端视图自动返回
                 tagIdList: [],
                 tagNameList: []
             }
@@ -102,13 +105,11 @@ export default {
         this.initPage()
     },
     watch: {
-        // 同页面路由切换不同文章，重新加载
         $route() {
             this.initPage()
         }
     },
     methods: {
-        // 初始化页面
         initPage() {
             this.id = this.$route.query.id
             if (!this.id) {
@@ -119,7 +120,6 @@ export default {
             this.loadLikeStatus()
         },
 
-        // 请求文章详情（后端视图自动携带categoryName、tagNameList）
         loadArticleDetail() {
             this.loading = true
             this.isError = false
@@ -133,7 +133,6 @@ export default {
             })
         },
 
-        // 加载点赞状态
         loadLikeStatus() {
             getLikeStatus(this.id).then(res => {
                 this.likeCount = res.data.likeCount
@@ -141,7 +140,6 @@ export default {
             }).catch(() => { })
         },
 
-        // 点赞/取消点赞
         handleLike() {
             if (!localStorage.getItem('token')) {
                 this.$message.warning('请先登录后点赞')
@@ -165,12 +163,10 @@ export default {
             })
         },
 
-        // 返回列表
         goBack() {
             this.$router.back()
         },
 
-        // 统一补零时间格式化
         formatDate(date) {
             if (!date) return '-'
             const d = new Date(date)
@@ -187,29 +183,62 @@ export default {
 </script>
 
 <style scoped>
+/* 页面整体容器 */
 .article-detail {
     max-width: 900px;
     margin: 0 auto;
-    padding: 24px;
-    background: var(--color-white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    min-height: calc(100vh - 80px);
+    padding: 24px 20px 60px;
 }
 
-.back-bar {
-    margin-bottom: 20px;
+/* 极简返回文字按钮区域，无玻璃卡片 */
+.back-row {
+    margin-bottom: 24px;
+}
+.back-text-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #6355d8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.back-text-btn:hover {
+    color: #4c3fc4;
+    transform: translateX(-3px);
+}
+.back-text-btn i {
+    font-size: 16px;
 }
 
 .error-box {
-    padding: 60px 0;
+    padding: 80px 0;
+}
+
+/* 文章主体液态玻璃卡片 */
+.article-content {
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.02),
+        0 6px 22px rgba(0, 0, 0, 0.05);
+}
+.article-content > * {
+    position: relative;
+    z-index: 1;
 }
 
 .article-title {
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0 0 16px 0;
+    color: #1d1d1f;
+    margin: 0 0 20px 0;
     line-height: 1.4;
 }
 
@@ -218,11 +247,11 @@ export default {
     flex-wrap: wrap;
     gap: 12px 16px;
     align-items: center;
-    color: var(--color-text-secondary);
+    color: #86868b;
     font-size: 13px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    margin-bottom: 16px;
 }
 
 .meta-item {
@@ -231,143 +260,165 @@ export default {
     gap: 4px;
 }
 
-/* 标签样式 */
+/* 标签区域 */
 .tag-wrap {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 .tag-label {
     font-size: 13px;
-    color: var(--color-text-secondary);
+    color: #86868b;
 }
 
-/* 点赞按钮样式 */
+/* 点赞按钮 */
 .like-btn {
     cursor: pointer;
     transition: color 0.2s;
     user-select: none;
 }
-
 .like-btn:hover {
     color: #6355d8;
 }
-
 .like-btn.active {
     color: #e6a23c;
 }
 
 .cover-box {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     text-align: center;
 }
-
 .cover-img {
     max-width: 100%;
-    max-height: 400px;
-    border-radius: 8px;
+    max-height: 420px;
+    border-radius: 16px;
     object-fit: cover;
 }
 
 .article-summary {
-    padding: 14px 18px;
-    background: #f5f7fa;
+    padding: 16px 20px;
+    background: rgba(64, 158, 255, 0.08);
     border-left: 4px solid #409eff;
-    border-radius: 4px;
-    color: #606266;
-    font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 24px;
+    border-radius: 12px;
+    color: #515154;
+    font-size: 15px;
+    line-height: 1.65;
+    margin-bottom: 28px;
 }
 
 /* Markdown正文排版 */
 .markdown-body {
-    color: var(--color-text-primary);
-    font-size: 15px;
-    line-height: 1.8;
+    color: #1d1d1f;
+    font-size: 16px;
+    line-height: 1.85;
     word-break: break-word;
 }
-
 .markdown-body /deep/ h2,
 .markdown-body /deep/ h3 {
-    margin-top: 24px;
-    margin-bottom: 12px;
+    margin-top: 32px;
+    margin-bottom: 14px;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: #1d1d1f;
 }
-
 .markdown-body /deep/ p {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
-
 .markdown-body /deep/ img {
     max-width: 100%;
-    border-radius: 6px;
-    margin: 12px 0;
+    border-radius: 12px;
+    margin: 16px 0;
 }
-
 .markdown-body /deep/ ul,
 .markdown-body /deep/ ol {
-    padding-left: 24px;
-    margin-bottom: 16px;
+    padding-left: 26px;
+    margin-bottom: 18px;
 }
-
 .markdown-body /deep/ code {
     background: #f5f7fa;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 14px;
     color: #e6a23c;
 }
-
 .markdown-body /deep/ pre {
     background: #2d2d2d;
     color: #ccc;
-    padding: 16px;
-    border-radius: 6px;
+    padding: 20px;
+    border-radius: 12px;
     overflow-x: auto;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
-
 .markdown-body /deep/ pre code {
     background: transparent;
     color: inherit;
     padding: 0;
 }
-
 .markdown-body /deep/ blockquote {
-    margin: 16px 0;
-    padding: 10px 16px;
+    margin: 20px 0;
+    padding: 12px 20px;
     border-left: 4px solid #dcdfe6;
-    color: #909399;
-    background: #fafafa;
-    border-radius: 0 4px 4px 0;
+    color: #6e6e73;
+    background: rgba(0,0,0,0.02);
+    border-radius: 0 12px 12px 0;
 }
 
-/* 暗黑模式适配 */
-body.dark-mode .article-detail {
-    background: var(--color-dark-surface);
-    box-shadow: var(--shadow-card-dark);
+/* ========== 暗黑模式适配 ========== */
+body.dark-mode .back-text-btn {
+    color: #b3a7ff;
+}
+body.dark-mode .back-text-btn:hover {
+    color: #d1c8ff;
 }
 
+body.dark-mode .article-content {
+    background: rgba(30, 30, 36, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+body.dark-mode .article-title {
+    color: #f5f5f7;
+}
+body.dark-mode .article-meta {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
 body.dark-mode .article-summary {
     background: rgba(64, 158, 255, 0.1);
     color: #a3b1c2;
 }
-
+body.dark-mode .markdown-body {
+    color: #f5f5f7;
+}
+body.dark-mode .markdown-body /deep/ h2,
+body.dark-mode .markdown-body /deep/ h3 {
+    color: #f5f5f7;
+}
 body.dark-mode .markdown-body /deep/ code {
     background: rgba(255, 255, 255, 0.1);
 }
-
 body.dark-mode .markdown-body /deep/ blockquote {
     background: rgba(255, 255, 255, 0.05);
     border-color: #4a5060;
     color: #909399;
 }
-
 body.dark-mode .like-btn:hover {
     color: #b3a7ff;
+}
+
+/* 移动端适配 */
+@media (max-width:768px) {
+    .article-detail {
+        padding: 16px;
+    }
+    .back-row {
+        margin-bottom: 16px;
+    }
+    .article-content {
+        padding: 24px 20px;
+        border-radius: 20px;
+    }
+    .article-title {
+        font-size: 24px;
+    }
 }
 </style>

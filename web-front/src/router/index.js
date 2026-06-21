@@ -85,6 +85,12 @@ const constantRoutes = [
         meta: { requiresAuth: false }
       },
       {
+        path: 'profile',
+        name: 'FrontProfile',
+        component: () => import('@/views/front/Profile.vue'),
+        meta: { requiresAuth: false }
+      },
+      {
         path: 'timeline',
         name: 'TimeLine',
         component: () => import('@/views/front/TimeLine.vue'),

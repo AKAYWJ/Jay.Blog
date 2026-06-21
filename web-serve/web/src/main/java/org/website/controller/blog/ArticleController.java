@@ -19,6 +19,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
@@ -147,8 +153,10 @@ public class ArticleController {
     @GetMapping("/front/like/status")
     public Result<Map<String, Object>> getLikeStatus(@RequestParam Long articleId) {
         Map<String, Object> result = new HashMap<>();
-        Article article = articleService.getById(articleId);
-        if (article == null || article.getStatus() != 2) {
+        // 统一使用视图查询，保证likeCount为聚合最新值
+        Article article = articleService.getArticleViewById(articleId);
+        // 统一校验：文章存在且已发布
+        if (article == null || !Integer.valueOf(2).equals(article.getStatus())) {
             return Result.fail(403, "文章不存在");
         }
         result.put("likeCount", article.getLikeCount());

@@ -5,6 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Data
 public class Role extends BaseEntity{
 

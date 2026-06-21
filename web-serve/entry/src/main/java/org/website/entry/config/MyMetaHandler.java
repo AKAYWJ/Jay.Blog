@@ -5,6 +5,12 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Component
 public class MyMetaHandler implements MetaObjectHandler {
     @Override

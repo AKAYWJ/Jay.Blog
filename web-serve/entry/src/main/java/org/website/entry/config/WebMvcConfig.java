@@ -9,6 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.website.entry.interceptor.LoginInterceptor;
 import org.website.entry.interceptor.PermissionInterceptor;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
@@ -43,7 +49,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/article/front/hot",
                         "/article/front/list",
                         "/article/front/detail/*",
-                        "/article/front/like/status",
                         "/visitor/front/add",
                         "/stat/front"
                 );
@@ -67,7 +72,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/article/front/hot",
                         "/article/front/list",
                         "/article/front/detail/*",
-                        "/article/front/like/status",
                         "/visitor/front/add",
                         "/stat/front"
                 );

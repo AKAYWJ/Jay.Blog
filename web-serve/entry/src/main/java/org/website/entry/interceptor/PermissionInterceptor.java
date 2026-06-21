@@ -17,6 +17,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 public class PermissionInterceptor implements HandlerInterceptor {
 
     @Resource

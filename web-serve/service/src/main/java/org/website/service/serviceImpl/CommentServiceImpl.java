@@ -6,6 +6,12 @@ import org.website.dao.mapper.CommentMapper;
 import org.website.dao.mapper.entity.Comment;
 import org.website.service.CommentService;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 }

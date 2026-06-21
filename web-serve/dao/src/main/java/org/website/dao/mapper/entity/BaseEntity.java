@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 /**
  * @author AKAYWJ
  * @version 1.0
- * @description: TODO
- * @date 2026/6/9 08:31
+ * @description:
  */
+
 
 @Data
 public class BaseEntity {

@@ -7,6 +7,12 @@ import org.website.dao.mapper.ArticleTagMapper;
 import org.website.dao.mapper.entity.ArticleTag;
 import org.website.service.ArticleTagService;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Service
 public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, ArticleTag> implements ArticleTagService {
 }

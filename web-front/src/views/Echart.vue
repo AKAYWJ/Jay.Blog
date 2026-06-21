@@ -246,7 +246,7 @@ export default {
             }))
 
             const option = {
-                color: ['#6355d8', '#409eff', '#e6a23c', '#f56c6c', '#67c23a', '#722ed1', '#13c2c2'],
+                color: ['#5B4FCF', '#409eff', '#e6a23c', '#f56c6c', '#67c23a', '#722ed1', '#13c2c2'],
                 tooltip: { trigger: 'item', formatter: '{b}: {c}篇 ({d}%)' },
                 series: [
                     {
@@ -294,7 +294,7 @@ export default {
                 value: item.articleCount || 1
             }))
             const option = {
-                color: ['#6355d8', '#409eff', '#e6a23c', '#f56c6c', '#67c23a', '#722ed1', '#13c2c2'],
+                color: ['#5B4FCF', '#409eff', '#e6a23c', '#f56c6c', '#67c23a', '#722ed1', '#13c2c2'],
                 tooltip: { trigger: 'item', formatter: '{b}: {c}篇 ({d}%)' },
                 series: [
                     {
@@ -349,8 +349,8 @@ export default {
                         name: '访客数',
                         type: 'line',
                         smooth: true,
-                        lineStyle: { color: '#008CFF' },
-                        areaStyle: { color: 'rgba(0, 140, 255, 0.1)' },
+                        lineStyle: { color: '#5B4FCF' },
+                        areaStyle: { color: 'rgba(91, 79, 207, 0.1)' },
                         data: this.lineSeriesData
                     }
                 ]
@@ -402,11 +402,22 @@ export default {
 .stat-card,
 .chart-card,
 .table-card {
-    background: var(--color-white);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    background: var(--liquid-glass-bg);
+    backdrop-filter: var(--liquid-glass-blur);
+    border: var(--liquid-glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--liquid-glass-shadow);
     padding: var(--spacing-card);
     height: 100%;
+}
+
+.stat-card > *,
+.chart-card > *,
+.table-card > * {
+    position: relative;
+    z-index: 1;
 }
 
 /* 卡片头部 */
@@ -473,7 +484,9 @@ body.dark-mode .chart-page {
 body.dark-mode .stat-card,
 body.dark-mode .chart-card,
 body.dark-mode .table-card {
-    background-color: var(--color-dark-surface-alt);
+    background: var(--liquid-glass-bg);
+    border: var(--liquid-glass-border);
+    box-shadow: var(--liquid-glass-shadow);
 }
 
 body.dark-mode .card-title {

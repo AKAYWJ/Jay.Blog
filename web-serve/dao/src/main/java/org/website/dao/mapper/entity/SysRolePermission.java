@@ -7,6 +7,12 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Data
 @TableName("sys_role_permission")
 public class SysRolePermission {

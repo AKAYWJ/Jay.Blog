@@ -1,15 +1,31 @@
-
-/* ===== 按钮 ===== */
-.el-button {
-  border-radius: var(--radius-sm);
-}
+/* ============================================================
+   Element UI 组件覆盖 —— 紫色主题
+   ============================================================ */
 
 .el-button--primary {
   background: var(--color-primary-gradient);
   border: none;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
 }
 
-/* ===== 表格 ===== */
+.el-button--primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.el-button--primary:active {
+  transform: translateY(0);
+}
+
+.el-button--text {
+  color: var(--color-primary);
+}
+
+.el-button--text:hover {
+  color: var(--color-primary-dark);
+}
+
 .el-table {
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -18,30 +34,24 @@
 .el-table th {
   background: var(--color-bg);
   font-weight: 600;
-  color: var(--color-text-regular);
-}
-
-body.dark-mode .el-table th {
-  background: var(--color-dark-border);
-  color: var(--color-dark-text-secondary);
+  color: var(--color-text-secondary);
+  font-size: 13px;
 }
 
 .el-table td {
-  color: var(--color-text-secondary);
+  color: var(--color-text-regular);
 }
 
-/* ===== 弹窗 ===== */
 .el-dialog {
   border-radius: var(--radius-lg);
 }
 
-/* ===== 输入框 / 下拉框 ===== */
 .el-input__inner,
-.el-select .el-input__inner {
+.el-select .el-input__inner,
+.el-textarea__inner {
   border-radius: var(--radius-sm);
 }
 
-/* ===== 菜单（SidebarMenu 中的通用部分） ===== */
 .el-menu {
   border-right: none;
 }
@@ -51,7 +61,17 @@ body.dark-mode .el-table th {
   font-weight: 500;
 }
 
-/* ===== 暗黑模式：Element UI 组件覆盖 ===== */
+.el-pagination button,
+.el-pager li {
+  border-radius: var(--radius-sm);
+}
+
+.el-pager li.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ===== 暗黑模式 ===== */
 body.dark-mode .el-table {
   background: var(--color-dark-surface);
   border-color: var(--color-dark-border-table);
@@ -69,4 +89,12 @@ body.dark-mode .el-table td {
 
 body.dark-mode .el-form-item__label {
   color: var(--color-dark-text-muted);
+}
+
+body.dark-mode .el-input__inner,
+body.dark-mode .el-select .el-input__inner,
+body.dark-mode .el-textarea__inner {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-dark-text);
 }

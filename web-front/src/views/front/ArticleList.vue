@@ -1,58 +1,45 @@
 <template>
     <div class="article-list-page">
-        <!-- 筛选栏 -->
+        <!-- iOS风格导航过滤栏 -->
         <div class="filter-bar">
-            <!-- 返回上一页按钮 -->
             <div class="back-btn">
-                <el-button icon="el-icon-arrow-left" circle @click="goBack"></el-button>
+                <el-button icon="el-icon-arrow-left" circle size="small"></el-button>
             </div>
-
             <div class="search-box">
-                <el-input v-model="searchKeyword" placeholder="搜索文章标题..." clearable @keyup.enter="handleSearch"
-                    @clear="handleSearch">
-                </el-input>
+                <el-input v-model="searchKeyword" placeholder="搜索文章..." clearable @keyup.enter="handleSearch"
+                    @clear="handleSearch"></el-input>
             </div>
-
             <div class="category-filter">
                 <el-select v-model="currentCategoryId" placeholder="全部分类" clearable @change="handleCategoryChange">
                     <el-option label="全部分类" :value="null"></el-option>
-                    <el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id">
-                    </el-option>
+                    <el-option v-for="item in categoryList" :key="item.id" :label="item.name"
+                        :value="item.id"></el-option>
                 </el-select>
             </div>
         </div>
 
-        <!-- 文章列表 -->
+        <!-- 文章列表区域 -->
         <div class="article-list" v-loading="loading">
             <el-empty v-if="articleList.length === 0 && !loading" description="暂无相关文章"></el-empty>
-
             <div v-for="item in articleList" :key="item.id" class="article-card" @click="goDetail(item.id)">
-                <!-- 封面图 -->
-                <div class="card-cover" v-if="item.cover">
-                    <img :src="item.cover" alt="封面">
+                <!-- 顶部元信息：日期 + 分类 -->
+                <div class="card-meta">
+                    <span class="meta-date">{{ formatDate(item.createTime) }}</span>
+                    <span class="meta-sep">·</span>
+                    <span class="meta-category">{{ item.categoryName || '未分类' }}</span>
                 </div>
-                <div class="card-cover cover-placeholder" v-else>
-                    <i class="el-icon-document"></i>
-                </div>
-
-                <!-- 文章内容 -->
-                <div class="card-content">
-                    <h3 class="article-title">{{ item.title }}</h3>
-                    <p class="article-summary">{{ item.summary || '暂无摘要' }}</p>
-                    <div class="article-meta">
-                        <span class="meta-tag">{{ item.categoryName || '未分类' }}</span>
-                        <span class="meta-item">
-                            <i class="el-icon-view"></i> {{ item.viewCount || 0 }}
-                        </span>
-                        <span class="meta-item">
-                            <i class="el-icon-time"></i> {{ formatDate(item.createTime) }}
-                        </span>
-                    </div>
+                <!-- 主标题 -->
+                <h3 class="card-title">{{ item.title }}</h3>
+                <!-- 摘要文本 -->
+                <p class="card-summary">{{ item.summary || '暂无摘要' }}</p>
+                <!-- 底部阅读量 -->
+                <div class="card-footer">
+                    <span class="view-count">{{ item.viewCount || 0 }} 次阅读</span>
                 </div>
             </div>
         </div>
 
-        <!-- 分页 -->
+        <!-- 分页器 -->
         <div class="pagination-wrap" v-if="total > pageSize">
             <el-pagination @current-change="handlePageChange" :current-page="pageNum" :page-size="pageSize"
                 layout="prev, pager, next, total" :total="total">
@@ -81,9 +68,7 @@ export default {
     },
     created() {
         const routeCategoryId = this.$route.query.categoryId
-        if (routeCategoryId) {
-            this.currentCategoryId = Number(routeCategoryId)
-        }
+        if (routeCategoryId) this.currentCategoryId = Number(routeCategoryId)
         this.loadCategoryList()
         this.loadArticleList()
     },
@@ -96,96 +81,71 @@ export default {
         }
     },
     methods: {
-        // 返回上一页
-        goBack() {
-            this.$router.back()
-        },
-
+        goBack() { this.$router.back() },
         loadCategoryList() {
-            getCategoryList().then(res => {
-                this.categoryList = res.data
-            }).catch(() => {
-                this.$message.error('获取分类失败')
-            })
+            getCategoryList().then(res => { this.categoryList = res.data }).catch(() => { })
         },
-
         loadArticleList() {
             this.loading = true
-            const params = {
-                pageNum: this.pageNum,
-                pageSize: this.pageSize
-            }
-            if (this.searchKeyword.trim()) {
-                params.title = this.searchKeyword.trim()
-            }
-            if (this.currentCategoryId) {
-                params.categoryId = this.currentCategoryId
-            }
-
+            const params = { pageNum: this.pageNum, pageSize: this.pageSize }
+            if (this.searchKeyword.trim()) params.title = this.searchKeyword.trim()
+            if (this.currentCategoryId) params.categoryId = this.currentCategoryId
             getFrontArticleList(params).then(res => {
                 this.articleList = res.data.records
                 this.total = res.data.total
             }).catch(() => {
                 this.$message.error('获取文章列表失败')
-            }).finally(() => {
-                this.loading = false
-            })
+            }).finally(() => { this.loading = false })
         },
-
-        handleSearch() {
-            this.pageNum = 1
-            this.loadArticleList()
-        },
-
+        handleSearch() { this.pageNum = 1; this.loadArticleList() },
         handleCategoryChange() {
             this.pageNum = 1
-            this.$router.replace({
-                path: '/articlelist',
-                query: {
-                    categoryId: this.currentCategoryId || undefined
-                }
-            })
+            this.$router.replace({ path: '/articlelist', query: { categoryId: this.currentCategoryId || undefined } })
         },
-
-        handlePageChange(page) {
-            this.pageNum = page
-            this.loadArticleList()
-            window.scrollTo({ top: 0, behavior: 'smooth' })
-        },
-
-        goDetail(id) {
-            this.$router.push({
-                path: '/article',
-                query: { id }
-            })
-        },
-
+        handlePageChange(page) { this.pageNum = page; this.loadArticleList(); window.scrollTo({ top: 0, behavior: 'smooth' }) },
+        goDetail(id) { this.$router.push({ path: '/front/article', query: { id } }) },
+        // 苹果极简日期格式
         formatDate(date) {
             if (!date) return '-'
             const d = new Date(date)
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 0)}-${String(d.getDate()).padStart(2, 0)}`
+            const month = String(d.getMonth() + 1).padStart(2, '0')
+            const day = String(d.getDate()).padStart(2, '0')
+            return `${d.getFullYear()}年${month}月${day}日`
         }
     }
 }
 </script>
 
 <style scoped>
+/* 页面全局基础约束 苹果安全边距 */
 .article-list-page {
-    max-width: 1000px;
+    max-width: 820px;
     margin: 0 auto;
-    padding: 24px;
-    min-height: calc(100vh - 80px);
+    padding: 24px 20px 60px;
 }
 
+/* ========== 顶部过滤导航栏 iOS液态玻璃导航风格 ========== */
 .filter-bar {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     padding: 16px 20px;
-    background: var(--color-white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    /* 苹果原生液态玻璃半透 */
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    /* 极淡柔和阴影，拒绝厚重阴影 */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.filter-bar>* {
+    position: relative;
+    z-index: 1;
 }
 
 .back-btn {
@@ -196,206 +156,170 @@ export default {
     flex: 1;
 }
 
-/* 搜索框美化 */
-.search-box /deep/ .el-input__inner {
-    height: 40px;
-    line-height: 40px;
-    border-radius: 20px;
-    border: 1px solid #e4e7ed;
-    padding-left: 42px;
-    padding-right: 20px;
-    font-size: 14px;
-    transition: all 0.25s ease;
-}
-
-.search-box /deep/ .el-input__inner:hover {
-    border-color: #c0c4cc;
-}
-
-.search-box /deep/ .el-input__inner:focus {
-    border-color: #409eff;
-    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.12);
-}
-
-.search-icon {
-    color: #909399;
-    font-size: 16px;
-    margin-left: 6px;
-}
-
 .category-filter {
-    width: 200px;
+    width: 190px;
     flex-shrink: 0;
 }
 
-/* 分类选择器统一圆角 */
+/* 输入框 苹果胶囊圆角 */
+.search-box /deep/ .el-input__inner,
 .category-filter /deep/ .el-input__inner {
     height: 40px;
-    line-height: 40px;
-    border-radius: 20px;
-    border: 1px solid #e4e7ed;
-    transition: all 0.25s ease;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    transition: all 0.24s ease;
 }
 
+.search-box /deep/ .el-input__inner:focus,
 .category-filter /deep/ .el-input__inner:focus {
-    border-color: #409eff;
-    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.12);
+    border-color: rgba(91, 79, 207, 0.35);
+    box-shadow: 0 0 0 4px rgba(91, 79, 207, 0.08);
 }
 
+/* ========== 文章列表容器 ========== */
 .article-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-}
-
-.article-card {
-    display: flex;
     gap: 20px;
-    padding: 20px;
-    background: var(--color-white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
 }
 
-.article-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: #409eff;
-}
-
-.card-cover {
-    width: 220px;
-    height: 140px;
-    border-radius: 8px;
+/* 苹果标准文章卡片 Liquid Glass 重构 */
+.article-card {
+    padding: 28px 30px;
+    position: relative;
     overflow: hidden;
-    flex-shrink: 0;
-    background: #f5f7fa;
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
+    /* 多层极淡柔和阴影，苹果标志性悬浮质感 */
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.02),
+        0 6px 22px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.2, 0, 0.2, 1);
 }
 
-.card-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.article-card>* {
+    position: relative;
+    z-index: 1;
 }
 
-.cover-placeholder {
+/* Hover 轻盈上浮，苹果克制动效，无刺眼变色 */
+.article-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.03),
+        0 10px 32px rgba(0, 0, 0, 0.07);
+    border-color: rgba(91, 79, 207, 0.18);
+}
+
+/* ========== 文字层级 严格对齐苹果动态字体规范 ========== */
+/* 顶部元信息 */
+.card-meta {
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #c0c4cc;
-    font-size: 48px;
+    gap: 8px;
+    font-size: 13px;
+    color: #86868b;
+    margin-bottom: 12px;
 }
 
-.card-content {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.meta-sep {
+    opacity: 0.45;
 }
 
-.article-title {
-    font-size: 18px;
+.meta-category {
+    color: #5b4fcf;
+    font-weight: 500;
+}
+
+/* 标题：苹果大标题字重、字号宽松行高 */
+.card-title {
+    font-size: 19px;
     font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0 0 8px 0;
+    color: #1d1d1f;
+    line-height: 1.42;
+    margin: 0 0 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.article-summary {
-    font-size: 14px;
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-    margin: 0 0 12px 0;
+/* 摘要正文 柔和浅灰，两行截断 */
+.card-summary {
+    font-size: 15px;
+    color: #515154;
+    line-height: 1.65;
+    margin: 0 0 16px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.article-meta {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 12px;
-    color: var(--color-text-secondary);
+/* 底部小字 */
+.card-footer {
+    font-size: 13px;
+    color: #86868b;
 }
 
-.meta-tag {
-    padding: 2px 8px;
-    background: #ecf5ff;
-    color: #409eff;
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
+/* ========== 分页器 ========== */
 .pagination-wrap {
     display: flex;
     justify-content: center;
-    margin-top: 32px;
+    margin-top: 40px;
 }
 
-/* 暗黑模式适配 */
+/* ========== 暗黑模式 macOS/iOS 深色液态玻璃适配 ========== */
 body.dark-mode .filter-bar,
 body.dark-mode .article-card {
-    background: var(--color-dark-surface);
-    box-shadow: var(--shadow-card-dark);
+    background: rgba(30, 30, 36, 0.58);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
 }
 
 body.dark-mode .article-card:hover {
-    border-color: #409eff;
+    background: rgba(42, 42, 50, 0.68);
+    border-color: rgba(123, 111, 232, 0.22);
 }
 
-body.dark-mode .card-cover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-body.dark-mode .meta-tag {
-    background: rgba(64, 158, 255, 0.1);
-}
-
-/* 暗黑模式输入框适配 */
 body.dark-mode .search-box /deep/ .el-input__inner,
 body.dark-mode .category-filter /deep/ .el-input__inner {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba255, 255, 255, 0.09;
+    color: #f5f5f7;
 }
 
-body.dark-mode .search-box /deep/ .el-input__inner:hover,
-body.dark-mode .category-filter /deep/ .el-input__inner:hover {
-    border-color: rgba(64, 158, 255, 0.4);
+body.dark-mode .card-title {
+    color: #f5f5f7;
 }
 
-body.dark-mode .search-box /deep/ .el-input__inner:focus,
-body.dark-mode .category-filter /deep/ .el-input__inner:focus {
-    border-color: #409eff;
-    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.2);
+body.dark-mode .card-summary {
+    color: #a1a1aa;
 }
 
-body.dark-mode .search-icon {
-    color: #909399;
+body.dark-mode .card-meta,
+body.dark-mode .card-footer {
+    color: #86868b;
 }
 
-/* 响应式适配 */
+/* ========== 移动端自适应 苹果移动端规范 ========== */
 @media (max-width: 768px) {
-    .filter-bar {
-        flex-wrap: wrap;
+    .article-list-page {
+        padding: 16px 16px 40px;
     }
 
-    .back-btn {
-        order: 1;
+    .filter-bar {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 14px 16px;
     }
 
     .search-box {
@@ -404,18 +328,17 @@ body.dark-mode .search-icon {
     }
 
     .category-filter {
-        order: 2;
         flex: 1;
         width: auto;
     }
 
     .article-card {
-        flex-direction: column;
+        padding: 22px 20px;
+        border-radius: 20px;
     }
 
-    .card-cover {
-        width: 100%;
-        height: 180px;
+    .card-title {
+        font-size: 17px;
     }
 }
 </style>

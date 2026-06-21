@@ -6,6 +6,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.website.dao.mapper.entity.Article;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Mapper
 public interface ArticleMapper extends BaseMapper<Article> {
     // 分页查询视图 v_article_full

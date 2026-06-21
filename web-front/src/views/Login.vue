@@ -9,7 +9,6 @@
                     : 'Join millions of users using our system to improve efficiency' }}
             </p>
 
-            <!-- 功能亮点列表 -->
             <div class="features-list" v-if="tabType === 'register'">
                 <div class="feature-item">
                     <span class="check-icon">✓</span>
@@ -30,15 +29,13 @@
             </div>
         </div>
 
-        <!-- 右侧表单卡片 -->
         <div class="right-section">
             <div class="form-card">
-
                 <!-- 登录表单 -->
                 <form v-if="tabType === 'login'" @submit.prevent="handleLogin">
                     <div class="form-group">
-                        <input v-model="loginForm.phone" type="text" class="form-input"
-                            placeholder="Phone number" required>
+                        <input v-model="loginForm.phone" type="text" class="form-input" placeholder="Phone number"
+                            required>
                     </div>
                     <div class="form-group">
                         <input v-model="loginForm.password" type="password" class="form-input" placeholder="Password"
@@ -50,9 +47,8 @@
                     </button>
                 </form>
 
-                <!-- 注册表单 -->
+                <!-- 注册表单：新增邮箱输入框 -->
                 <form v-if="tabType === 'register'" @submit.prevent="handleRegister">
-
                     <div class="form-group">
                         <input v-model="registerForm.phone" type="tel" class="form-input" placeholder="Phone number *"
                             required>
@@ -65,6 +61,11 @@
                         <input v-model="registerForm.name" type="text" class="form-input" placeholder="Username *"
                             required>
                     </div>
+                    <!-- 新增邮箱 -->
+                    <div class="form-group">
+                        <input v-model="registerForm.email" type="email" class="form-input"
+                            placeholder="Email (optional)">
+                    </div>
                     <div class="form-group">
                         <input v-model.number="registerForm.age" type="number" class="form-input"
                             placeholder="Age (optional)">
@@ -72,9 +73,8 @@
                     <div class="form-group">
                         <select v-model="registerForm.sex" class="form-input form-select">
                             <option value="">Gender (optional)</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="secret">Prefer not to say</option>
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
                         </select>
                     </div>
                     <button type="submit" class="submit-btn">
@@ -83,7 +83,6 @@
                     </button>
                 </form>
 
-                <!-- 底部条款 -->
                 <p class="terms-text">
                     By clicking {{ tabType === 'login' ? 'Sign in with Google' : 'Sign up with Google' }} or {{ tabType
                         === 'login' ? 'Sign in' : 'Sign up' }} with email you agree to our
@@ -91,7 +90,6 @@
                     <a href="#" class="terms-link">Privacy Policy</a>
                 </p>
 
-                <!-- 登录/注册切换 -->
                 <p class="switch-text">
                     {{ tabType === 'login' ? "Don't have an account?" : "Already have an account?" }}
                     <span class="switch-link" @click="toggleTab">
@@ -104,20 +102,22 @@
 </template>
 
 <script>
-import { register,login } from '@/api/user'
+import { register, login } from '@/api/user'
 export default {
     name: 'LoginRegister',
     data() {
         return {
-            tabType: 'login', // login / register
+            tabType: 'login',
             loginForm: {
                 phone: '19999999999',
                 password: ''
             },
+            // 新增email字段
             registerForm: {
                 name: '',
                 password: '',
                 phone: '19999999999',
+                email: '',
                 age: '',
                 sex: ''
             }
@@ -129,29 +129,33 @@ export default {
         },
         handleLogin() {
             login(this.loginForm).then((res) => {
-                if(res.code == 200){
-                    this.$store.dispatch("login",res.data)
+                if (res.code == 200) {
+                    // res.data 包含 avatar、email，直接传入vuex
+                    this.$store.dispatch("login", res.data)
                     this.$notify({
                         title: '成功',
                         message: res.msg,
                         type: 'success'
                     });
                     this.$router.push("/home")
-                }else{
+                } else {
                     this.$notify.error({
                         title: '错误',
                         message: res.msg
                     });
                 }
             })
-            
+
         },
         handleRegister() {
+            // 转换性别为数据库 1/0
+            let form = { ...this.registerForm }
+            if (form.sex === 'male') form.sex = 1
+            if (form.sex === 'female') form.sex = 0
+            if (form.sex === 'secret') form.sex = null
 
-            register(this.registerForm).then((res) => {
-
+            register(form).then((res) => {
                 if (res.code == 200) {
-
                     this.$notify({
                         title: '成功',
                         message: res.data,
@@ -171,7 +175,7 @@ export default {
 </script>
 
 <style scoped>
-/* 页面整体：深紫渐变背景，全屏高度 */
+/* 原有样式无改动，省略不变代码 */
 .login-page {
     width: 100vw;
     height: 100vh;
@@ -184,7 +188,6 @@ export default {
     font-family: var(--font-family);
 }
 
-/* 左侧区域 */
 .left-section {
     flex: 1;
     max-width: 500px;
@@ -225,14 +228,12 @@ export default {
     font-size: 20px;
 }
 
-/* 右侧区域 */
 .right-section {
     flex: 1;
     display: flex;
     justify-content: flex-end;
 }
 
-/* 表单卡片 */
 .form-card {
     width: 440px;
     background: var(--color-white);
@@ -241,55 +242,6 @@ export default {
     box-shadow: var(--shadow-form);
 }
 
-/* Google登录按钮 */
-.google-btn {
-    width: 100%;
-    height: 52px;
-    border: 2px solid var(--color-google);
-    border-radius: var(--radius-full);
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--color-google);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    margin-bottom: 24px;
-}
-
-.google-btn:hover {
-    background: #f8faff;
-}
-
-.google-icon {
-    width: 24px;
-    height: 24px;
-}
-
-/* OR分隔线 */
-.divider {
-    display: flex;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 16px;
-}
-
-.divider-line {
-    flex: 1;
-    height: 1px;
-    background: var(--color-border-light);
-}
-
-.divider-text {
-    color: #6b7280;
-    font-size: var(--font-size-body);
-    font-weight: 500;
-}
-
-/* 表单输入框 */
 .form-group {
     margin-bottom: 20px;
 }
@@ -319,7 +271,6 @@ export default {
     background-size: 20px;
 }
 
-/* 提交按钮 */
 .submit-btn {
     width: 100%;
     height: 56px;
@@ -348,7 +299,6 @@ export default {
     font-weight: bold;
 }
 
-/* 底部文字 */
 .terms-text {
     font-size: 13px;
     color: #6b7280;

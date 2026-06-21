@@ -6,6 +6,12 @@ import org.website.dao.mapper.entity.User;
 import org.website.dao.mapper.UserMapper;
 import org.website.service.UserService;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 

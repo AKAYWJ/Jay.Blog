@@ -1,9 +1,7 @@
 /* ============================================================
-   全局通用样式 —— 页面级 class 和基础样式
-   Users / Roles / System 等 CRUD 页面共享的通用 class 集中于此
+   全局基础样式
    ============================================================ */
 
-/* ===== 基础重置 ===== */
 * {
   margin: 0;
   padding: 0;
@@ -13,6 +11,21 @@
 body {
   font-family: var(--font-family);
   background: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 背景光晕（为毛玻璃 blur 提供内容折射） ===== */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 0%, transparent 50%),
+        radial-gradient(circle at 80% 60%, rgba(0,0,0,0.015) 0%, transparent 50%);
 }
 
 body.dark-mode {
@@ -20,74 +33,44 @@ body.dark-mode {
   color: var(--color-dark-text);
 }
 
-/* ===== 页面标题 ===== */
-.page-title {
-  font-size: var(--font-size-page-title);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-page);
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
-/* ===== 搜索/表格卡片（Users / Roles 共用） ===== */
-.search-card,
-.table-card {
-  background: var(--color-white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  padding: var(--spacing-card);
-  margin-bottom: var(--spacing-gap);
+/* ===== Apple 磨砂液态玻璃卡片 ===== */
+.liquid-glass {
+    position: relative;
+    background: var(--liquid-glass-bg);
+    backdrop-filter: var(--liquid-glass-blur);
+    -webkit-backdrop-filter: var(--liquid-glass-blur);
+    border: var(--liquid-glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--liquid-glass-shadow);
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-gap);
+/* 顶部高光（模拟玻璃边缘的光线折射） */
+.liquid-glass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.8) 80%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--spacing-gap);
+/* 悬浮效果 —— Apple 风格的微上浮 */
+.liquid-glass:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--liquid-glass-shadow-hover);
 }
 
-/* ===== System 页面 info-card ===== */
-.info-card {
-  background: var(--color-white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  padding: var(--spacing-card-lg);
-  max-width: 700px;
-}
-
-.info-card .card-header {
-  margin-bottom: var(--spacing-card-lg);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 16px;
-}
-
-.info-card .card-header h3 {
-  font-size: var(--font-size-card-title);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-/* ===== 暗黑模式：通用卡片 ===== */
-body.dark-mode .search-card,
-body.dark-mode .table-card,
-body.dark-mode .info-card {
-  background: var(--color-dark-surface);
-  box-shadow: var(--shadow-card-dark);
-}
-
-body.dark-mode .page-title {
-  color: var(--color-dark-text);
-}
-
-body.dark-mode .info-card .card-header {
-  border-color: var(--color-dark-border);
-}
-
-body.dark-mode .info-card .card-header h3 {
-  color: var(--color-dark-text);
+.liquid-glass > * {
+    position: relative;
+    z-index: 1;
 }

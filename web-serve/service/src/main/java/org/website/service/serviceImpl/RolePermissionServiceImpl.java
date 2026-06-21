@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * @author AKAYWJ
+ * @version 1.0
+ * @description:
+ */
+
 @Service
 public class RolePermissionServiceImpl implements RolePermissionService {
 
