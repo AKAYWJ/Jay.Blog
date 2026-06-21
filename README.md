@@ -2,6 +2,7 @@
 
 前后端分离的个人博客系统，基于自研脚手架搭建。支持 Markdown 文章编辑、RBAC 权限管理、动态路由、访客统计等功能。
 > **项目地址**：https://gitee.com/akaywj/jay.-blog  
+> **在线体验**：https://jayblog.buuicard.cn/
 
 ## 技术栈
 
