@@ -1,4 +1,3 @@
-
 # JayBlog
 
 前后端分离的个人博客系统，基于自研脚手架搭建。支持 Markdown 文章编辑、RBAC 权限管理、动态路由、访客统计等功能。
@@ -15,7 +14,7 @@
 | HTTP 客户端 | axios | 1.17.0 |
 | 路由 | Vue Router | 3.5.1 |
 | 状态管理 | Vuex | 3.6.2 |
-| 后端框架 | Spring Boot | 2.7.18 (managed 2.6.13) |
+| 后端框架 | Spring Boot | 2.7.18 |
 | 构建工具 | Maven | 多模块 |
 | ORM | MyBatis-Plus | 3.5.3.1 |
 | 数据库连接池 | Druid | 1.2.20 |
@@ -28,24 +27,13 @@
 ## 目录结构
 
 ```
-MyBlog/
+JayBlog/
 ├── db/                          # 数据库脚本
-│   └── myblog.sql               # 建表语句 + 初始数据
-├── ms2026.sql                   # 额外 SQL 备份
+│   └── jayblog.sql              # 建表语句 + 初始数据
 ├── fileupload/                  # 用户上传封面图（运行时数据）
 ├── web-front/                   # 前端项目
 │   ├── src/
 │   │   ├── api/                 # 接口请求封装
-│   │   │   ├── article.js       # 文章接口
-│   │   │   ├── category.js      # 分类接口
-│   │   │   ├── tag.js           # 标签接口
-│   │   │   ├── comment.js       # 评论接口
-│   │   │   ├── user.js          # 用户接口
-│   │   │   ├── role.js          # 角色接口
-│   │   │   ├── system.js        # 系统管理接口
-│   │   │   ├── visitor.js       # 访客统计接口
-│   │   │   ├── front.js         # 前台展示接口
-│   │   │   └── request.js       # axios 拦截器
 │   │   ├── assets/              # 静态资源
 │   │   ├── components/          # 通用组件
 │   │   ├── layout/              # 后台布局组件
@@ -53,35 +41,11 @@ MyBlog/
 │   │   ├── store/               # Vuex 状态管理
 │   │   ├── styles/              # 全局样式
 │   │   ├── views/               # 页面视图
-│   │   │   ├── Article.vue      # 文章管理
-│   │   │   ├── Category.vue     # 分类管理
-│   │   │   ├── Tag.vue          # 标签管理
-│   │   │   ├── Comment.vue      # 评论管理
-│   │   │   ├── Users.vue        # 用户管理
-│   │   │   ├── Roles.vue        # 角色管理
-│   │   │   ├── System.vue       # 系统设置
-│   │   │   ├── Echart.vue       # 数据统计图表
-│   │   │   ├── HomeView.vue     # 后台首页
-│   │   │   ├── Login.vue        # 登录/注册
-│   │   │   └── front/           # 前台博客页面
-│   │   │       ├── FrontLayout.vue
-│   │   │       ├── Index.vue    # 首页
-│   │   │       ├── ArticleList.vue
-│   │   │       ├── ArticleDetail.vue
-│   │   │       ├── Category.vue
-│   │   │       ├── TimeLine.vue # 时间轴
-│   │   │       └── About.vue
 │   │   ├── App.vue
 │   │   └── main.js
-│   ├── .env.developmen          # 开发环境变量
 │   └── package.json
 └── web-serve/                   # 后端项目（Maven 多模块）
     ├── entry/                   # 启动入口 + Spring Boot 配置
-    │   └── src/main/
-    │       ├── java/org/website/entry/
-    │       │   └── EntryApplication.java
-    │       └── resources/
-    │           └── application.properties
     ├── web/                     # Controller 层
     ├── service/                 # Service 业务逻辑层
     ├── dao/                     # 数据持久层 (MyBatis-Plus Mapper)
@@ -121,9 +85,9 @@ MyBlog/
    ```
 2. 导入建表脚本：
    ```bash
-   mysql -u root -p myblog < db/myblog.sql
+   mysql -u root -p myblog < db/jayblog.sql
    ```
-3. 修改后端数据库连接配置（如需要）。
+3. 修改后端数据库连接配置（`web-serve/entry/src/main/resources/application.properties`）。
 
 ### 后端启动
 
@@ -155,10 +119,9 @@ npm run serve
 npm run build
 ```
 
-开发环境默认代理后端 `http://localhost:8080`，可在 `.env.developmen` 中修改 `VUE_APP_BASE_API`。
+开发环境默认代理后端 `http://localhost:8080`，可在 `web-front/.env.development` 中修改 `VUE_APP_BASE_API`。
 
 ### 访问
 
 - 前台博客：`http://localhost:8081/front/index`
 - 后台管理：`http://localhost:8081/login`
-
