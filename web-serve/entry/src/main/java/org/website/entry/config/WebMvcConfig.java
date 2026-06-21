@@ -82,7 +82,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/cover/**")
-                .addResourceLocations("file:/Users/yewenjie/项目资源/MyBlog/fileupload/cover/");
+                .addResourceLocations("file:/home/person/JayBlog/fileupload/cover/");
     }
 
     @Override
