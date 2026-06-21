@@ -126,4 +126,4 @@ npm run build
 ### 访问
 
 - 前台博客：`http://localhost:8081/front/index`
-- 后台管理：`http://localhost:8081/login`
+- 后台管理：`http://localhost:8081/admin` (前提：user是超级管理员角色)
