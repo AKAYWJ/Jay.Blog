@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: './',  
+  publicPath: '/front/',  
   pages: {
     index: {
       entry: 'src/main.js',
