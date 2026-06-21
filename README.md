@@ -89,7 +89,7 @@ JayBlog/
    ```bash
    mysql -u root -p myblog < db/jayblog.sql
    ```
-3. 修改后端数据库连接配置（`web-serve/entry/src/main/resources/application.properties`）。
+3. 修改后端数据库连接配置（`web-serve/dao/src/main/resources/application.yml`）。
 
 ### 后端启动
 
