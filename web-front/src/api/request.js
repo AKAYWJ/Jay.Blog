@@ -5,9 +5,9 @@ import store from '../store' // ✅ 新增：导入Vuex store
 
 // 创建Axios实例
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API,
+  baseURL: process.env.VUE_APP_API_PREFIX,
   timeout: 15000,
-  withCredentials: true // 如果后端不需要携带Cookie可以删掉
+  withCredentials: true
 })
 
 // 全局loading计数器（防止多个请求同时发起时loading闪烁）
