@@ -26,4 +26,10 @@ public class User extends BaseEntity {
     private String email;
     private Integer roleId;
     private String isValid;
+
+    // ========== 视图返回/接收临时字段（数据库不存在） ==========
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String captchaId;
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String captcha;
 }

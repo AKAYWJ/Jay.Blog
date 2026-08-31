@@ -36,4 +36,11 @@
         WHERE role_id = #{roleId} AND permission_id = #{permissionId}
     </select>
 
+    <!-- 根据角色ID查询有效权限列表（联查 sys_permission） -->
+    <select id="selectPermissionsByRoleId" resultType="org.website.dao.mapper.entity.SysPermission">
+        SELECT p.* FROM sys_permission p
+                            INNER JOIN sys_role_permission rp ON p.id = rp.permission_id
+        WHERE rp.role_id = #{roleId} AND p.is_valid = 'Y'
+        ORDER BY p.sort ASC
+    </select>
 </mapper>

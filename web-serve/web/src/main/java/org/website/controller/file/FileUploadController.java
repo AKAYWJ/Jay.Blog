@@ -24,19 +24,30 @@ public class FileUploadController {
     private static final String WEB_PREFIX = "/upload/cover/";
 
     /**
-     * 上传文章封面
+     * 上传文章封面（需登录）
      */
     @PostMapping("/cover")
     public Result<String> uploadCover(@RequestParam("file") MultipartFile file) {
         try {
+            // 基础校验：非空
+            if (file == null || file.isEmpty()) {
+                return Result.fail(400, "文件不能为空");
+            }
+            String originalName = file.getOriginalFilename();
+            if (originalName == null || !originalName.contains(".")) {
+                return Result.fail(400, "文件名不合法");
+            }
+            // 提取后缀并做类型白名单校验，防止上传可执行文件
+            String suffix = originalName.substring(originalName.lastIndexOf(".")).toLowerCase();
+            if (!".jpg".equals(suffix) && !".jpeg".equals(suffix) && !".png".equals(suffix)
+                    && !".gif".equals(suffix) && !".webp".equals(suffix)) {
+                return Result.fail(400, "仅支持 jpg/jpeg/png/gif/webp 图片");
+            }
             // 根文件夹不存在自动创建
             File baseDir = new File(SAVE_BASE_PATH);
             if (!baseDir.exists()) {
                 baseDir.mkdirs();
             }
-            // 提取后缀
-            String originalName = file.getOriginalFilename();
-            String suffix = originalName.substring(originalName.lastIndexOf("."));
             // 按日期分文件夹存储
             String dateFolder = new SimpleDateFormat("yyyyMMdd").format(new Date());
             String fileName = UUID.randomUUID().toString().replace("-", "") + suffix;
@@ -53,7 +64,7 @@ public class FileUploadController {
             return Result.success(accessUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.fail(400,"图片上传失败");
+            return Result.fail(400, "图片上传失败");
         }
     }
 

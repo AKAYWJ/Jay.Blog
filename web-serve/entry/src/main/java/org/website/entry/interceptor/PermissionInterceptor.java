@@ -1,6 +1,6 @@
 package org.website.entry.interceptor;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.website.common.annotation.RequiresPermission;
@@ -8,7 +8,7 @@ import org.website.common.result.Result;
 import org.website.dao.mapper.entity.SysPermission;
 import org.website.dao.mapper.entity.User;
 import org.website.dao.mapper.util.UserContext;
-import org.website.service.SysRoleService;
+import org.website.service.RolePermissionService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class PermissionInterceptor implements HandlerInterceptor {
 
     @Resource
-    private SysRoleService roleService;
+    private RolePermissionService rolePermissionService;
 
     // 修复：移除通配符**，使用纯前缀匹配
     private static final List<String> WHITE_LIST = Arrays.asList(
@@ -35,9 +35,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
             "/auth/info",
             "/auth/id",
             "/static/",
-            "/favicon.ico",
-            "/upload/cover/",
-            "/upload/cover/**"
+            "/favicon.ico"
     );
 
     @Override
@@ -64,7 +62,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         }
 
         // 管理员直接放行
-        if (user.getRoleId() == 1) {
+        if (Integer.valueOf(1).equals(user.getRoleId())) {
             return true;
         }
 
@@ -80,7 +78,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         }
 
         String requiredPermission = annotation.value();
-        List<String> userPermissions = roleService.getPermissionsByRoleId(user.getRoleId())
+        List<String> userPermissions = rolePermissionService.getPermissionsByRoleId(user.getRoleId())
                 .stream()
                 .map(SysPermission::getCode)
                 .collect(Collectors.toList());

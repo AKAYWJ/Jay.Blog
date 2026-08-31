@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 import org.website.common.annotation.RequiresPermission;
 import org.website.common.result.Result;
 import org.website.dao.mapper.entity.Comment;
@@ -44,7 +45,12 @@ public class CommentController {
     public Result<Page<Map<String, Object>>> getFrontCommentList(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam Long articleId) {
+            @RequestParam(required = false) Long articleId) {
+
+        // articleId 缺失或非法时返回空分页，避免前端 400
+        if (articleId == null) {
+            return Result.success(new Page<Map<String, Object>>(pageNum, pageSize, 0));
+        }
 
         // 1. 查询一级评论（parent_id 为 null，仅显示审核通过的）
         QueryWrapper<Comment> rootWrapper = new QueryWrapper<>();
@@ -114,12 +120,18 @@ public class CommentController {
         if (content == null || content.trim().isEmpty()) {
             return Result.fail(403,"评论内容不能为空");
         }
+        String trimmed = content.trim();
+        if (trimmed.length() > 500) {
+            return Result.fail(403, "评论内容不能超过500字");
+        }
+        // XSS 转义后再入库，防止存储型 XSS
+        String safeContent = HtmlUtils.htmlEscape(trimmed);
 
         // 保存评论
         Comment newComment = new Comment();
         newComment.setArticleId(comment.getArticleId());
-        newComment.setUserId(Long.valueOf(user.getId()));
-        newComment.setContent(content.trim());
+        newComment.setUserId(user.getId().longValue());
+        newComment.setContent(safeContent);
         newComment.setParentId(comment.getParentId());
         newComment.setStatus(1); // 默认审核通过，如需人工审核可改为0
         newComment.setCreateTime(LocalDateTime.now());
@@ -146,7 +158,7 @@ public class CommentController {
         }
 
         // 核心校验：只能删除自己发布的评论
-        if (comment.getUserId() != Integer.parseInt(String.valueOf(user.getId()))) {
+        if (comment.getUserId() == null || !comment.getUserId().equals(user.getId().longValue())) {
             return Result.fail(403, "无权删除他人评论");
         }
 
@@ -168,7 +180,7 @@ public class CommentController {
      */
     @GetMapping("/list")
     @RequiresPermission("comment:list")
-    public Result<Page<Comment>> list(
+    public Result<Page<Map<String, Object>>> list(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             Long articleId, Integer status) {
@@ -179,7 +191,28 @@ public class CommentController {
         wrapper.orderByDesc("create_time");
 
         Page<Comment> page = commentService.page(new Page<>(pageNum, pageSize), wrapper);
-        return Result.success(page);
+
+        // 组装返回数据，关联评论人昵称与邮箱（表本身只有 userId）
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        for (Comment c : page.getRecords()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", c.getId());
+            item.put("articleId", c.getArticleId());
+            item.put("userId", c.getUserId());
+            item.put("parentId", c.getParentId());
+            item.put("content", c.getContent());
+            item.put("status", c.getStatus());
+            item.put("createTime", c.getCreateTime());
+            item.put("updateTime", c.getUpdateTime());
+            User user = c.getUserId() == null ? null : userService.getById(c.getUserId());
+            item.put("nickname", user != null ? user.getName() : "匿名用户");
+            item.put("email", user != null ? user.getEmail() : "");
+            resultList.add(item);
+        }
+
+        Page<Map<String, Object>> resultPage = new Page<>(pageNum, pageSize, page.getTotal());
+        resultPage.setRecords(resultList);
+        return Result.success(resultPage);
     }
 
     /**
@@ -187,9 +220,21 @@ public class CommentController {
      */
     @GetMapping("/get/{id}")
     @RequiresPermission("comment:list")
-    public Result<Comment> getById(@PathVariable Long id) {
+    public Result<Map<String, Object>> getById(@PathVariable Long id) {
         Comment comment = commentService.getById(id);
-        return Result.success(comment);
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", comment.getId());
+        item.put("articleId", comment.getArticleId());
+        item.put("userId", comment.getUserId());
+        item.put("parentId", comment.getParentId());
+        item.put("content", comment.getContent());
+        item.put("status", comment.getStatus());
+        item.put("createTime", comment.getCreateTime());
+        item.put("updateTime", comment.getUpdateTime());
+        User user = comment.getUserId() == null ? null : userService.getById(comment.getUserId());
+        item.put("nickname", user != null ? user.getName() : "匿名用户");
+        item.put("email", user != null ? user.getEmail() : "");
+        return Result.success(item);
     }
 
     /**

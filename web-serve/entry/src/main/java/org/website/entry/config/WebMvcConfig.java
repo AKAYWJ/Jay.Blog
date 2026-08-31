@@ -3,7 +3,6 @@ package org.website.entry.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -21,12 +20,12 @@ import org.website.entry.interceptor.PermissionInterceptor;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
-    public HandlerInterceptor loginInterceptor() {
+    public LoginInterceptor loginInterceptor() {
         return new LoginInterceptor();
     }
 
     @Bean
-    public HandlerInterceptor permissionInterceptor() {
+    public PermissionInterceptor permissionInterceptor() {
         return new PermissionInterceptor();
     }
 
@@ -35,13 +34,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/hello",
                         "/auth/login",
                         "/auth/register",
+                        "/auth/captcha",
                         "/static/**",
                         "/favicon.ico",
                         "/upload/test",
-                        "/upload/cover",
                         "/comment/front/list",
                         "/article/list",
                         "/category/front/list",
@@ -52,19 +50,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/article/front/list",
                         "/article/front/detail/*",
                         "/visitor/front/add",
+                        "/visitor/front/daily",
                         "/stat/front"
                 );
 
         registry.addInterceptor(permissionInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/hello",
                         "/auth/login",
                         "/auth/register",
+                        "/auth/captcha",
                         "/static/**",
                         "/favicon.ico",
                         "/upload/test",
-                        "/upload/cover",
                         "/comment/front/list",
                         "/article/list",
                         "/category/front/list",
@@ -74,7 +72,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/article/front/hot",
                         "/article/front/list",
                         "/article/front/detail/*",
+                        "/article/front/like/status",
                         "/visitor/front/add",
+                        "/visitor/front/daily",
                         "/stat/front"
                 );
     }

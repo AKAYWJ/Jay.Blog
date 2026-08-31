@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { Message, MessageBox, Loading } from 'element-ui'
 import qs from 'qs'
-import store from '../store' // ✅ 新增：导入Vuex store
+import store from '../store'
+import router from '../router'
 
 // 创建Axios实例
 const service = axios.create({
@@ -55,11 +56,6 @@ service.interceptors.request.use(
       config.data = qs.stringify(config.data)
     }
 
-    // GET请求添加时间戳防止IE缓存
-    if (config.method === 'get') {
-      config.params = { ...config.params, _t: Date.now() }
-    }
-
     return config
   },
   error => {
@@ -75,9 +71,10 @@ service.interceptors.response.use(
     hideLoading()
     const res = response.data
 
-    // 后端统一返回格式：{ code: 200, data: {}, message: 'success' }
+    // 后端统一返回格式：{ code: 200, msg: '成功', data: {} }
     if (res.code !== 200) {
-      Message.error(res.message || '请求失败')
+      // 注意：后端字段是 msg，不是 message
+      Message.error(res.msg || '请求失败')
 
       // 401：Token过期/无效
       if (res.code === 401) {
@@ -90,13 +87,29 @@ service.interceptors.response.use(
         })
       }
 
-      return Promise.reject(new Error(res.message || '请求失败'))
+      return Promise.reject(new Error(res.msg || '请求失败'))
     } else {
       return res
     }
   },
   error => {
     hideLoading()
+
+    // 后端拦截器以 HTTP 401 返回未登录/过期，axios 会进入此错误分支
+    if (error.response && error.response.status === 401) {
+      MessageBox.confirm('登录已过期，请重新登录', '系统提示', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('logout')
+        if (router.currentRoute.path !== '/login') {
+          router.push('/login')
+        }
+      }).catch(() => {})
+      return Promise.reject(error)
+    }
+
     let msg = '网络连接失败，请稍后重试'
 
     if (error.message.includes('timeout')) {

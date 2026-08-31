@@ -1,0 +1,100 @@
+/* ============================================================
+   Element UI 组件覆盖 —— 紫色主题
+   ============================================================ */
+
+.el-button--primary {
+  background: var(--color-primary-gradient);
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.el-button--primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.el-button--primary:active {
+  transform: translateY(0);
+}
+
+.el-button--text {
+  color: var(--color-primary);
+}
+
+.el-button--text:hover {
+  color: var(--color-primary-dark);
+}
+
+.el-table {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.el-table th {
+  background: var(--color-bg);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.el-table td {
+  color: var(--color-text-regular);
+}
+
+.el-dialog {
+  border-radius: var(--radius-lg);
+}
+
+.el-input__inner,
+.el-select .el-input__inner,
+.el-textarea__inner {
+  border-radius: var(--radius-sm);
+}
+
+.el-menu {
+  border-right: none;
+}
+
+.el-menu-item {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+}
+
+.el-pagination button,
+.el-pager li {
+  border-radius: var(--radius-sm);
+}
+
+.el-pager li.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ===== 暗黑模式 ===== */
+body.dark-mode .el-table {
+  background: var(--color-dark-surface);
+  border-color: var(--color-dark-border-table);
+}
+
+body.dark-mode .el-table th {
+  background: var(--color-dark-border);
+  color: var(--color-dark-text-secondary);
+}
+
+body.dark-mode .el-table td {
+  color: var(--color-dark-text-muted);
+  border-color: var(--color-dark-border-table);
+}
+
+body.dark-mode .el-form-item__label {
+  color: var(--color-dark-text-muted);
+}
+
+body.dark-mode .el-input__inner,
+body.dark-mode .el-select .el-input__inner,
+body.dark-mode .el-textarea__inner {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-dark-text);
+}

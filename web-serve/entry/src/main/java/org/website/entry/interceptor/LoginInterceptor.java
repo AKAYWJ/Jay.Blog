@@ -56,10 +56,10 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         // 5. 解析token获取用户ID
-        Long userId;
+        Integer userId;
         try {
             Claims claims = JwtUtil.parseToken(token);
-            userId = Long.parseLong(claims.getSubject());
+            userId = Integer.parseInt(claims.getSubject());
         } catch (Exception e) {
             return unauthorized(response, "无效的token");
         }

@@ -9,13 +9,6 @@ module.exports = {
         pathRewrite: {
           '^/api': ''
         }
-      },
-      // 新增：上传接口单独代理
-      '/upload': {
-        target: 'http://localhost:8086',
-        changeOrigin: true,
-        // 路径不需要重写，后端本身就是 /upload/cover
-        pathRewrite: {}
       }
     }
   },

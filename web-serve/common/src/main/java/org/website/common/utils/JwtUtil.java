@@ -10,8 +10,9 @@ import java.util.Date;
  * JWT工具类（兼容Java 8，JJWT 0.9.1版本）
  */
 public class JwtUtil {
-    // 密钥（生产环境请换成更复杂的随机字符串）
-    private static final String SECRET_KEY = "AKAYWJ-WebSystem-20260609-SecretKey123456";
+    private static final String SECRET_KEY = System.getenv("JWT_SECRET_KEY") != null
+            ? System.getenv("JWT_SECRET_KEY")
+            : "AKAYWJ-WebSystem-20260609-SecretKey123456";
     // token过期时间：7天
     private static final long EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000L;
 

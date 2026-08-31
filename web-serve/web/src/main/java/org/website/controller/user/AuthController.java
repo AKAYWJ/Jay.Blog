@@ -9,7 +9,7 @@ import org.website.common.utils.PasswordUtil;
 import org.website.dao.mapper.entity.SysPermission;
 import org.website.dao.mapper.entity.User;
 import org.website.dao.mapper.util.UserContext;
-import org.website.service.SysRoleService;
+import org.website.service.RolePermissionService;
 import org.website.service.UserService;
 
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private SysRoleService roleService;
+    private RolePermissionService rolePermissionService;
 
     @PostMapping("/register")
     public Result<String> register(@RequestBody User user) {
@@ -41,6 +41,15 @@ public class AuthController {
         User existUser = userService.getOne(queryWrapper);
         if (existUser != null) {
             return Result.fail(400, "用户名已存在");
+        }
+
+        // 手机号唯一性校验（登录按手机号查询，重复会串号）
+        if (user.getPhone() != null && !user.getPhone().trim().isEmpty()) {
+            QueryWrapper<User> phoneWrapper = new QueryWrapper<>();
+            phoneWrapper.eq("phone", user.getPhone());
+            if (userService.getOne(phoneWrapper) != null) {
+                return Result.fail(400, "该手机号已被注册");
+            }
         }
 
         user.setIsValid("Y");
@@ -85,6 +94,16 @@ public class AuthController {
         String phone = loginRequest.getPhone();
         String password = loginRequest.getPassword();
 
+        // 1. 校验图形验证码
+        String captchaId = loginRequest.getCaptchaId();
+        String captchaCode = loginRequest.getCaptcha();
+        if (captchaId == null || captchaCode == null || captchaCode.trim().isEmpty()) {
+            return Result.fail(400, "请输入验证码");
+        }
+        if (!CaptchaController.verify(captchaId, captchaCode)) {
+            return Result.fail(400, "验证码错误或已过期");
+        }
+
         if (phone == null || phone.trim().isEmpty()) {
             return Result.fail(400, "手机号不能为空");
         }
@@ -109,8 +128,8 @@ public class AuthController {
             return Result.fail(401, "密码错误");
         }
 
-        String token = JwtUtil.generateToken(Long.valueOf(user.getId()), user.getName());
-        List<SysPermission> permissions = roleService.getPermissionsByRoleId(user.getRoleId());
+        String token = JwtUtil.generateToken(user.getId().longValue(), user.getName());
+        List<SysPermission> permissions = rolePermissionService.getPermissionsByRoleId(user.getRoleId());
         List<String> permissionCodes = permissions.stream()
                 .map(SysPermission::getCode)
                 .collect(Collectors.toList());
@@ -136,12 +155,16 @@ public class AuthController {
     @GetMapping("/info")
     public Result<User> getCurrentUserInfo() {
         User currentUser = UserContext.getUser();
+        if (currentUser != null) {
+            // 不向前端返回密码哈希
+            currentUser.setPassword(null);
+        }
         return Result.success(currentUser);
     }
 
     @GetMapping("/id")
     public Result<Long> getCurrentUserId() {
-        Long userId = Long.valueOf(UserContext.getUserId());
+        Long userId = UserContext.getUserId().longValue();
         return Result.success(userId);
     }
 }

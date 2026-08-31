@@ -3,13 +3,14 @@ package org.website.controller.role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.website.common.annotation.RequiresPermission;
+import org.website.common.dto.AssignPermDTO;
 import org.website.common.dto.PermissionTreeVO;
 import org.website.common.result.Result;
 import org.website.service.RolePermissionService;
 import org.website.service.SysPermissionService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,22 +33,22 @@ public class SysPermissionController {
      * GET /permission/tree
      */
     @GetMapping("/tree")
+    @RequiresPermission("role:list")
     public Result<List<PermissionTreeVO>> getPermissionTree() {
         List<PermissionTreeVO> tree = permissionService.getPermissionTree();
         return Result.success(tree);
     }
 
     @PostMapping("/assignPerm")
-    public Result assignPerm(@RequestBody Map<String, Object> params) {
-        Integer roleId = (Integer) params.get("roleId");
-        List<Integer> permissionIds = (List<Integer>) params.get("permissionIds");
-
-        rolePermissionService.assignRolePermission(roleId, permissionIds);
+    @RequiresPermission("role:edit")
+    public Result assignPerm(@RequestBody AssignPermDTO dto) {
+        rolePermissionService.assignRolePermission(dto.getRoleId(), dto.getPermissionIds());
         return Result.success("权限分配成功");
     }
 
     // 新增：查询角色已有权限接口
     @GetMapping("/permIds/{roleId}")
+    @RequiresPermission("role:edit")
     public Result getRolePermIds(@PathVariable Integer roleId) {
         Set<Integer> permIds = rolePermissionService.getPermissionIdsByRoleId(roleId);
         return Result.success(permIds);

@@ -22,6 +22,11 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
+// 刷新页面时在首次路由解析前从 localStorage 恢复的后端菜单动态注册后台路由
+// 否则 F5 停在 /admin/xx 时会被通配符 '*' 提前重定向到前台
+import { loadAsyncMenus } from './router'
+loadAsyncMenus()
+
 new Vue({
   router,
   store,

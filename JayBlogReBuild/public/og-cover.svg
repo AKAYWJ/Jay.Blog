@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1726"/>
+      <stop offset="50%" stop-color="#221d36"/>
+      <stop offset="100%" stop-color="#2d1f47"/>
+    </linearGradient>
+    <linearGradient id="text" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <radialGradient id="orb1" cx="0.2" cy="0.2" r="0.5">
+      <stop offset="0%" stop-color="#6b5cf0" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#6b5cf0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orb2" cx="0.8" cy="0.8" r="0.5">
+      <stop offset="0%" stop-color="#ec4899" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ec4899" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="240" cy="126" rx="500" ry="400" fill="url(#orb1)"/>
+  <ellipse cx="960" cy="504" rx="500" ry="400" fill="url(#orb2)"/>
+  <text x="100" y="280" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"
+        font-size="36" font-weight="500" fill="#a0a0b8" letter-spacing="3">JAY.BLOG</text>
+  <text x="100" y="380" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"
+        font-size="84" font-weight="700" fill="url(#text)" letter-spacing="-1">记录 · 思考 · 分享</text>
+  <text x="100" y="450" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"
+        font-size="28" font-weight="400" fill="#c0c0d0">在代码与生活的缝隙里，找一些值得留下的东西</text>
+  <line x1="100" y1="500" x2="180" y2="500" stroke="#6b5cf0" stroke-width="3" stroke-linecap="round"/>
+  <text x="100" y="540" font-family="-apple-system, BlinkMacSystemFont, monospace"
+        font-size="20" font-weight="400" fill="#888">blog.jaywk.top</text>
+</svg>

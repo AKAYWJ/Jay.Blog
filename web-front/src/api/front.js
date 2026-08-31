@@ -48,29 +48,3 @@ export function updateBlogConfig(data) {
     data
   })
 }
-
-// 文章详情（浏览量自增）
-export function getArticleDetail(id) {
-  return request({
-    url: `/article/${id}`,
-    method: 'get'
-  })
-}
-
-// 发表评论
-export function addComment(data) {
-  return request({
-    url: '/comment/add',
-    method: 'post',
-    data
-  })
-}
-
-// 获取文章评论（仅审核通过）
-export function getArticleComment(articleId) {
-  return request({
-    url: '/comment/list',
-    method: 'get',
-    params: { articleId }
-  })
-}

@@ -57,8 +57,8 @@
                     {{ article.summary }}
                 </div>
 
-                <!-- Markdown正文内容 -->
-                <div class="markdown-body" v-html="article.contentHtml"></div>
+                <!-- Markdown正文内容（DOMPurify 白名单过滤后渲染，防 XSS） -->
+                <div class="markdown-body" v-html="sanitizedContent"></div>
             </div>
         </div>
 
@@ -70,11 +70,20 @@
 <script>
 import { getArticleById, likeArticle, getLikeStatus } from '@/api/article'
 import CommentSection from '@/components/CommentSection.vue'
+import DOMPurify from 'dompurify'
 
 export default {
     name: 'ArticleDetail',
     components: {
         CommentSection
+    },
+    computed: {
+        // 对后端返回的 HTML 做白名单过滤，阻断 <script>/onerror 等 XSS 注入
+        sanitizedContent() {
+            return this.article.contentHtml
+                ? DOMPurify.sanitize(this.article.contentHtml)
+                : ''
+        }
     },
     data() {
         return {
@@ -125,6 +134,8 @@ export default {
             this.isError = false
             getArticleById(this.id).then(res => {
                 this.article = res.data
+                // 匿名访客兜底显示文章自带点赞数（登录用户稍后会由 loadLikeStatus 覆盖为精确值）
+                this.likeCount = res.data.likeCount || 0
             }).catch(() => {
                 this.isError = true
                 this.$message.error('获取文章详情失败')

@@ -36,18 +36,6 @@ export function getauthInfo() {
   })
 }
 
-/**
- * 用户退出登录
- */
-export function logout() {
-  return request({
-    url: '/auth/logout',
-    method: 'post'
-  })
-}
-
-
-
 //+++++++++++++++++++++++++++ User ++++++++++++++++++++++++++++++
 /**
  * 分页查询用户列表
@@ -73,11 +61,22 @@ export function addUser(data) {
 }
 
 /**
- * 修改用户
+ * 修改用户（后台管理，需 user:edit 权限）
  */
 export function updateUser(data) {
   return request({
     url: '/user/update',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 前台：修改自己的资料（仅需登录，不能改角色/手机号等）
+ */
+export function updateSelf(data) {
+  return request({
+    url: '/user/self/update',
     method: 'put',
     data
   })

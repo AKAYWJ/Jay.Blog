@@ -109,14 +109,14 @@ export default {
         return {
             tabType: 'login',
             loginForm: {
-                phone: '19999999999',
+                phone: '',
                 password: ''
             },
             // 新增email字段
             registerForm: {
                 name: '',
                 password: '',
-                phone: '19999999999',
+                phone: '',
                 email: '',
                 age: '',
                 sex: ''

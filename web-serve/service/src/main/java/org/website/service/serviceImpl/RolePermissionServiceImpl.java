@@ -9,7 +9,7 @@ import org.website.dao.mapper.entity.SysRolePermission;
 import org.website.service.RolePermissionService;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,50 +27,45 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     private SysRolePermissionMapper sysRolePermissionMapper;
 
     /**
-     * 核心：角色分配权限（事务正常，无XML，绝对不报错）
+     * 核心：角色分配权限（先删后加，保证原子性）
      */
     @Override
-    @Transactional(rollbackFor = Exception.class) // 事务保证原子性
+    @Transactional(rollbackFor = Exception.class)
     public void assignRolePermission(Integer roleId, List<Integer> permissionIds) {
-        // ===================== 1. 删除旧权限（已正常执行） =====================
-        LambdaQueryWrapper<SysRolePermission> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysRolePermission::getRoleId, roleId);
-        sysRolePermissionMapper.delete(wrapper);
+        // 1. 删除旧权限
+        sysRolePermissionMapper.deleteByRoleId(roleId);
 
-        // ===================== 2. 空权限直接返回 =====================
+        // 2. 空权限直接返回
         if (permissionIds == null || permissionIds.isEmpty()) {
             return;
         }
 
-        // ===================== 3. 循环插入新权限（最简单、最稳定、零报错） =====================
-        for (Integer permissionId : permissionIds) {
-            SysRolePermission rolePermission = new SysRolePermission();
-            rolePermission.setRoleId(roleId);
-            rolePermission.setPermissionId(permissionId);
-
-            // 插入单条数据（MP原生方法，绝对可用）
-            sysRolePermissionMapper.insert(rolePermission);
-        }
+        // 3. 批量插入新权限
+        sysRolePermissionMapper.batchInsert(roleId, permissionIds);
     }
 
-    // 下面的方法暂时空实现，不影响分配权限功能
     @Override
     public Set<Integer> getPermissionIdsByRoleId(Integer roleId) {
-        LambdaQueryWrapper<SysRolePermission> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysRolePermission::getRoleId, roleId);
-        List<SysRolePermission> list = sysRolePermissionMapper.selectList(wrapper);
-        return list.stream().map(SysRolePermission::getPermissionId).collect(Collectors.toSet());
+        List<Integer> permissionIds = sysRolePermissionMapper.selectPermissionIdsByRoleId(roleId);
+        return permissionIds.stream().collect(Collectors.toSet());
     }
+
     @Override
     public List<SysPermission> getPermissionsByRoleId(Integer roleId) {
-        return null;
+        return sysRolePermissionMapper.selectPermissionsByRoleId(roleId);
     }
+
     @Override
     public Set<Integer> getPermissionIdsByRoleIds(List<Integer> roleIds) {
-        return null;
+        if (roleIds == null || roleIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        List<Integer> permissionIds = sysRolePermissionMapper.selectPermissionIdsByRoleIds(roleIds);
+        return permissionIds.stream().collect(Collectors.toSet());
     }
+
     @Override
     public boolean hasPermission(Integer roleId, Integer permissionId) {
-        return false;
+        return sysRolePermissionMapper.countByRoleIdAndPermissionId(roleId, permissionId) > 0;
     }
 }

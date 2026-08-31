@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { updateUser } from '@/api/user'
+import { updateSelf } from '@/api/user'
 import axios from 'axios'
 
 export default {
@@ -133,21 +133,18 @@ export default {
             this.saveLoading = true
             try {
                 const params = {
-                    id: userInfo.userId,
                     name: this.user.username,
                     email: this.user.email,
-                    phone: this.user.phone,
                     age: this.user.age,
                     sex: this.user.sex,
-                    avatar: this.user.avatar,
-                    bio: this.user.bio
+                    avatar: this.user.avatar
                 }
                 // 密码非空才传递，后端加密更新
                 if (this.user.password && this.user.password.trim() !== '') {
                     params.password = this.user.password
                 }
 
-                await updateUser(params)
+                await updateSelf(params)
                 // 更新Vuex全局用户缓存
                 this.$store.commit('SET_USER_INFO', {
                     ...userInfo,

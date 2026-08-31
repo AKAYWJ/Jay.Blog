@@ -8,6 +8,7 @@ import org.website.common.annotation.RequiresPermission;
 import org.website.common.result.Result;
 import org.website.common.utils.PasswordUtil;
 import org.website.dao.mapper.entity.User;
+import org.website.dao.mapper.util.UserContext;
 import org.website.service.UserService;
 
 import java.util.List;
@@ -37,6 +38,8 @@ public class UserController {
         wrapper.eq("is_valid", "Y");
 
         Page<User> page = userService.page(new Page<>(pageNum, pageSize), wrapper);
+        // 不向前端返回密码哈希
+        page.getRecords().forEach(u -> u.setPassword(null));
         return Result.success(page);
     }
 
@@ -45,6 +48,7 @@ public class UserController {
     @RequiresPermission("user:list")
     public Result<User> getById(@PathVariable Integer id) {
         User user = userService.getById(id);
+        if (user != null) user.setPassword(null);
         return Result.success(user);
     }
 
@@ -71,6 +75,38 @@ public class UserController {
             user.setPassword(PasswordUtil.encode(user.getPassword()));
         }
         userService.updateById(user);
+        return Result.success("修改成功");
+    }
+
+    // ====================== 前台：修改自己的资料（无需 user:edit 权限，仅允许改本人） ======================
+    @PutMapping("/self/update")
+    public Result<String> updateSelf(@RequestBody User user) {
+        User loginUser = UserContext.getUser();
+        if (loginUser == null) {
+            return Result.fail(401, "请先登录");
+        }
+
+        // 用户名重复校验（排除自己）
+        if (user.getName() != null && !user.getName().trim().isEmpty()) {
+            QueryWrapper<User> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", user.getName()).ne("id", loginUser.getId());
+            if (userService.count(wrapper) > 0) {
+                return Result.fail(400, "用户名已被占用");
+            }
+        }
+
+        // 只允许更新白名单字段，roleId/isValid/phone 等一律忽略，防止越权改角色
+        User update = new User();
+        update.setId(loginUser.getId());
+        update.setName(user.getName());
+        update.setEmail(user.getEmail());
+        update.setAge(user.getAge());
+        update.setSex(user.getSex());
+        update.setAvatar(user.getAvatar());
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            update.setPassword(PasswordUtil.encode(user.getPassword()));
+        }
+        userService.updateById(update);
         return Result.success("修改成功");
     }
 

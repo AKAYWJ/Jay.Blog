@@ -5,11 +5,19 @@ import store from '../store'
 Vue.use(VueRouter)
 
 // ========== 全局修复路由报错（重复导航 + 重定向报错）==========
+// 路由错误判定：NavigationDuplicated 有专属 name；Redirected 在 vue-router3 里是普通 Error，
+// 需要通过 _isRouter 标记 + 消息内容判断
+function isIgnoredRouterError(err) {
+  if (!err) return false
+  if (err.name === 'NavigationDuplicated') return true
+  if (err._isRouter && /Redirected when going from/.test(err.message || '')) return true
+  return false
+}
+
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => {
-    // 忽略重复导航、守卫重定向两类正常错误，其他异常正常抛出
-    if (err.name === 'NavigationDuplicated' || err.name === 'RedirectedError') return
+    if (isIgnoredRouterError(err)) return
     return Promise.reject(err)
   })
 }
@@ -17,7 +25,7 @@ VueRouter.prototype.push = function push(location) {
 const originalReplace = VueRouter.prototype.replace
 VueRouter.prototype.replace = function replace(location) {
   return originalReplace.call(this, location).catch(err => {
-    if (err.name === 'NavigationDuplicated' || err.name === 'RedirectedError') return
+    if (isIgnoredRouterError(err)) return
     return Promise.reject(err)
   })
 }
@@ -142,16 +150,19 @@ function generateAsyncRoutes(menuList) {
     }))
 }
 
+let asyncRoutesLoaded = false
+
 export function loadAsyncMenus() {
+  if (asyncRoutesLoaded) return false
   const menuList = store.getters.getMenus
-  if (menuList.length === 0) return
+  if (menuList.length === 0) return false
   const adminLayout = router.options.routes.find(r => r.path === '/admin')
-  if (!adminLayout) return
+  if (!adminLayout) return false
   const asyncRoutes = generateAsyncRoutes(menuList)
-  // 追加到父路由children，维持嵌套结构，Layout内部router-view渲染页面
   adminLayout.children = [...adminLayout.children, ...asyncRoutes]
-  // 只重新注册父路由
   router.addRoute(adminLayout)
+  asyncRoutesLoaded = true
+  return true
 }
 
 router.beforeEach((to, from, next) => {
@@ -165,6 +176,12 @@ router.beforeEach((to, from, next) => {
   if (isAdminRole) {
     if (to.path === '/login') {
       next('/admin/home')
+      return
+    }
+    // 刷新页面后动态路由会丢失：仅当目标路由未匹配（说明动态路由丢了）时，
+    // 补注册并重走到目标路由；目标本就存在（如 /admin/home）则直接放行，避免多余重定向
+    if (isAdminRoute && to.matched.length === 0 && loadAsyncMenus()) {
+      next({ path: to.path, query: to.query, replace: true })
       return
     }
     next()

@@ -1,0 +1,163 @@
+/* ============================================================
+   全局基础样式
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 背景光晕（为毛玻璃 blur 提供内容折射） ===== */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 0%, transparent 50%),
+        radial-gradient(circle at 80% 60%, rgba(0,0,0,0.015) 0%, transparent 50%);
+}
+
+body.dark-mode {
+  background: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ===== Apple 磨砂液态玻璃卡片 ===== */
+.liquid-glass {
+    position: relative;
+    background: var(--liquid-glass-bg);
+    backdrop-filter: var(--liquid-glass-blur);
+    -webkit-backdrop-filter: var(--liquid-glass-blur);
+    border: var(--liquid-glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--liquid-glass-shadow);
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* 顶部高光（模拟玻璃边缘的光线折射） */
+.liquid-glass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.8) 80%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* 悬浮效果 —— Apple 风格的微上浮 */
+.liquid-glass:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--liquid-glass-shadow-hover);
+}
+
+.liquid-glass > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== 全局滚动条美化（webkit） ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(91, 79, 207, 0.28);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(91, 79, 207, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(91, 79, 207, 0.28) transparent;
+}
+
+/* ===== 文本选区美化 ===== */
+::selection {
+  background: rgba(91, 79, 207, 0.22);
+  color: inherit;
+}
+
+body.dark-mode ::selection {
+  background: rgba(123, 111, 232, 0.32);
+}
+
+/* ===== 平滑滚动 ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== 路由切换骨架（紫粉渐变闪烁） ===== */
+.page-skeleton {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.skeleton-bar {
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg,
+    rgba(91, 79, 207, 0.08) 0%,
+    rgba(91, 79, 207, 0.18) 50%,
+    rgba(91, 79, 207, 0.08) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+body.dark-mode .skeleton-bar {
+  background: linear-gradient(90deg,
+    rgba(123, 111, 232, 0.1) 0%,
+    rgba(123, 111, 232, 0.22) 50%,
+    rgba(123, 111, 232, 0.1) 100%);
+  background-size: 200% 100%;
+}
