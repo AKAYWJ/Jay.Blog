@@ -2,6 +2,7 @@
 
 前后端分离的个人博客系统，基于自研脚手架搭建。支持 Markdown 文章编辑、RBAC 权限管理、动态路由、访客统计等功能。
 > **项目地址**：https://gitee.com/akaywj/jay.-blog  
+> **在线体验**：https://jayblog.buuicard.cn/
 
 ## 技术栈
 
@@ -88,7 +89,7 @@ JayBlog/
    ```bash
    mysql -u root -p myblog < db/jayblog.sql
    ```
-3. 修改后端数据库连接配置（`web-serve/entry/src/main/resources/application.properties`）。
+3. 修改后端数据库连接配置（`web-serve/dao/src/main/resources/application.yml`）。
 
 ### 后端启动
 
@@ -125,4 +126,4 @@ npm run build
 ### 访问
 
 - 前台博客：`http://localhost:8081/front/index`
-- 后台管理：`http://localhost:8081/login`
+- 后台管理：`http://localhost:8081/admin` (前提：user是超级管理员角色)
